@@ -1,0 +1,62 @@
+name: Issue form to pull request
+
+# When a "Suggest a resource" issue is opened, convert it to _resources/<slug>.md
+# and open a pull request for review. Requires, in the repository settings,
+# Actions > General > Workflow permissions: "Read and write" and
+# "Allow GitHub Actions to create and approve pull requests".
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  convert:
+    if: contains(github.event.issue.labels.*.name, 'new-resource')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Write the resource file
+        id: convert
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          printf '%s' "$ISSUE_BODY" > /tmp/issue.md
+          FILE=$(python scripts/issue_to_resource.py --body /tmp/issue.md)
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+      - name: Validate the new file
+        run: python scripts/validate_resources.py "${{ steps.convert.outputs.file }}"
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: resource/issue-${{ github.event.issue.number }}
+          title: "New resource: ${{ github.event.issue.title }}"
+          commit-message: "Add resource from issue #${{ github.event.issue.number }}"
+          body: |
+            Generated from #${{ github.event.issue.number }}.
+
+            Review checklist:
+            - [ ] Description is accurate and within 2,000 characters
+            - [ ] Lifecycle stages and research areas match what the resource teaches
+            - [ ] Licence and version date verified on the resource
+            - [ ] `status` changed to `published`
+
+            Closes #${{ github.event.issue.number }}
+          labels: new-resource
+          delete-branch: true
+      - name: Comment on the issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number,
+              body: 'Thanks! A pull request with your suggestion has been opened for review. It will be published once a maintainer merges it.'
+            });
