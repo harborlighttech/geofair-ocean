@@ -1,0 +1,112 @@
+# ---------------------------------------------------------------------------
+# GeoFAIR Resource Hub — site configuration
+#
+# Everything an implementing domain needs to change is in the first block.
+# ---------------------------------------------------------------------------
+
+# --- Domain identity --------------------------------------------------------
+title: "GeoFAIR Ocean Resource Hub"
+domain: "Ocean"
+tagline: "Training and learning resources for FAIR ocean data, across the research data lifecycle."
+description: "A curated, searchable catalogue of learning resources for managing, sharing and reusing ocean science data."
+organization: "GeoFAIR"
+organization_url: "https://example.org/geofair"       # TODO
+contact_email: ""                                      # optional; shown in footer when set
+
+# Published site location. For a project site this is
+#   url: https://<org>.github.io   baseurl: /<repo>
+# For a user/organisation site or a custom domain, baseurl is "".
+url: "https://example.github.io"                       # TODO
+baseurl: "/geofair-ocean"                              # TODO
+github_repo: "https://github.com/example/geofair-ocean"  # TODO
+
+# --- Colour scheme ----------------------------------------------------------
+# Each value becomes a CSS custom property (--c-<key>) in <head>, so the whole
+# site restyles from here. Keep contrast of text on background >= 4.5:1.
+theme_colors:
+  primary: "#0b4f6c"      # header bar, buttons, links on light surfaces
+  primary_text: "#ffffff" # text on primary
+  accent: "#f2a541"       # highlights, focus rings, active facet chips
+  background: "#ffffff"
+  surface: "#f3f7f9"      # cards, facet panel
+  text: "#1c2b33"
+  muted: "#5c6b75"
+  border: "#d8e1e7"
+  link: "#0b4f6c"
+  success: "#2e7d32"
+  warning: "#b26a00"
+  danger: "#b3261e"
+
+# Optional hero image for the home page (path under assets/ or an absolute URL)
+hero_image: ""
+hero_credit: ""
+logo: ""                 # e.g. assets/img/logo.svg; leave empty for text-only header
+
+# --- Navigation -------------------------------------------------------------
+nav:
+  - title: "Resources"
+    url: /resources/
+  - title: "Vocabularies"
+    url: /vocab/
+  - title: "Contribute"
+    url: /contribute/
+  - title: "About"
+    url: /about/
+
+footer_links:
+  - title: "GitHub"
+    url: "https://github.com/example/geofair-ocean"   # TODO
+  - title: "Suggest a resource"
+    url: "https://github.com/example/geofair-ocean/issues/new?template=new-resource.yml"  # TODO
+
+# --- Catalogue behaviour ----------------------------------------------------
+catalogue:
+  # Which statuses appear in the public search index. draft and in-review never do.
+  indexed_statuses: [published, obsolete]
+  # Facets shown on the search page, in order. Remove any you do not want.
+  facets: [lifecycle_stage, resource_type, research_area, expertise_level, audience]
+  # Profile the JSON-LD declares conformance to
+  conforms_to: "https://bioschemas.org/profiles/TrainingMaterial/1.0-RELEASE"
+  # Shown on the home page
+  recent_count: 5
+
+# ---------------------------------------------------------------------------
+# Below here: build settings. Rarely needs changes.
+# ---------------------------------------------------------------------------
+collections:
+  resources:
+    output: true
+    permalink: /resources/:name/
+
+defaults:
+  - scope: {path: "", type: "resources"}
+    values:
+      layout: resource
+      status: draft          # a file that forgets status is never published
+      language: en
+      access_cost: "no"
+  - scope: {path: ""}
+    values:
+      layout: default
+
+markdown: kramdown
+kramdown:
+  input: GFM
+permalink: pretty
+timezone: UTC
+strict_front_matter: true
+
+plugins: []                 # none required; see README for optional ones
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - scripts
+  - schema
+  - README.md
+  - CONTRIBUTING.md
+  - LICENSE
+  - requirements.txt
+  - .github

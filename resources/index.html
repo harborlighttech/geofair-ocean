@@ -1,0 +1,58 @@
+---
+layout: default
+title: Resources
+description: Search and filter the catalogue by lifecycle stage, resource type, research area and more.
+permalink: /resources/
+main_class: search-page
+---
+{%- assign indexed = site.resources | where_exp: "r", "site.catalogue.indexed_statuses contains r.status" | sort: "title" -%}
+<script type="application/ld+json" id="resource-index">
+{
+  "@context": {"@vocab": "https://schema.org/", "dct": "http://purl.org/dc/terms/", "broadMatch": "http://www.w3.org/2004/02/skos/core#broadMatch"},
+  "@type": "ItemList",
+  "@id": {{ site.url | append: site.baseurl | append: "/resources/" | jsonify }},
+  "name": {{ site.title | append: " — resource catalogue" | jsonify }},
+  "numberOfItems": {{ indexed | size }},
+  "itemListOrder": "https://schema.org/ItemListUnordered",
+  "itemListElement": [
+    {%- for r in indexed %}
+    {"@type": "ListItem", "position": {{ forloop.index }}, "item": {% include jsonld/resource.html resource=r %}}{% unless forloop.last %},{% endunless %}
+    {%- endfor %}
+  ]
+}
+</script>
+
+<h1>Resources</h1>
+<p class="lead">{{ indexed | size }} learning resources for FAIR {{ site.domain | downcase }} data. Filter by lifecycle stage, type or topic, or search by keyword.</p>
+
+<div class="search" id="search">
+  {% include facet-panel.html %}
+  <section class="search__results" aria-label="Results">
+    <div class="search__controls">
+      <label for="q" class="muted">Search titles, descriptions, keywords and authors</label>
+      <input class="search__input" type="search" id="q" name="q" placeholder="e.g. netCDF, metadata, Argo…" autocomplete="off">
+    </div>
+    <div class="search__summary"><span id="result-count" aria-live="polite" role="status"></span><span id="active-filters"></span></div>
+    <div class="cards" id="results"></div>
+
+    <noscript>
+      <div class="noscript-list">
+        <p class="notice notice--info">Filtering needs JavaScript. The full catalogue is listed below, grouped by lifecycle stage.</p>
+        {%- for t in site.data.vocab.lifecycle_stage.terms %}
+        {%- assign n = 0 -%}
+        {%- for r in indexed %}{% if r.lifecycle_stages contains t.id %}{% assign n = n | plus: 1 %}{% endif %}{% endfor -%}
+        {%- if n > 0 %}
+        <h2 id="stage-{{ t.id }}">{{ t.label }}</h2>
+        <div class="cards">
+          {%- for r in indexed %}{% if r.lifecycle_stages contains t.id %}
+          {% include resource-card.html resource=r %}
+          {%- endif %}{% endfor %}
+        </div>
+        {%- endif %}
+        {%- endfor %}
+      </div>
+    </noscript>
+  </section>
+</div>
+
+<script src="{{ '/assets/js/facets.js' | relative_url }}" defer></script>

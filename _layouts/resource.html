@@ -1,0 +1,108 @@
+---
+layout: default
+---
+{%- assign r = page -%}
+{%- assign rtype = site.data.vocab.resource_type.terms | where: "id", r.resource_type | first -%}
+{%- assign level = site.data.vocab.expertise_level.terms | where: "id", r.expertise_level | first -%}
+{%- assign st = site.data.vocab.status.terms | where: "id", r.status | first -%}
+{%- assign lic = site.data.licenses[r.license.id] -%}
+<script type="application/ld+json">
+{% include jsonld/resource.html resource=page %}
+</script>
+
+<article class="resource">
+  {%- if r.status == "obsolete" %}
+  <div class="notice notice--warning" role="status">
+    <strong>Obsolete.</strong> This resource is no longer current.
+    {%- if r.superseded_by %}
+    {%- assign sup = r.superseded_by -%}
+    {%- unless sup contains "://" %}{% assign sup = "/resources/" | append: sup | append: "/" | relative_url %}{% endunless %}
+    See the <a href="{{ sup }}">replacement</a>.
+    {%- endif %}
+  </div>
+  {%- elsif r.status != "published" %}
+  <div class="notice notice--info" role="status"><strong>{{ st.label | default: r.status }}.</strong> This entry is not yet published and is not listed in the catalogue.</div>
+  {%- endif %}
+
+  <p class="resource__eyebrow">
+    <span class="chip chip--type">{{ rtype.label | default: r.resource_type }}</span>
+    {%- if level %} <span class="chip">{{ level.label }}</span>{% endif %}
+    {%- if r.access_cost == "no" %} <span class="chip chip--free">Free</span>{% elsif r.access_cost == "yes" %} <span class="chip">Paid</span>{% elsif r.access_cost == "maybe" %} <span class="chip">May have a cost</span>{% endif %}
+  </p>
+  <h1 class="resource__title">{{ r.title }}</h1>
+  <p class="resource__description">{{ r.description }}</p>
+
+  <p class="resource__cta">
+    <a class="button" href="{{ r.resource_url }}" rel="noopener">Open the resource <span aria-hidden="true">↗</span></a>
+    {%- if r.identifier %} <a class="resource__pid" href="{{ r.identifier }}">{{ r.identifier }}</a>{% endif %}
+  </p>
+
+  <div class="resource__grid">
+    <section class="resource__body">
+      {%- if r.learning_outcomes and r.learning_outcomes.size > 0 %}
+      <h2>What you will learn</h2>
+      <ul>
+        {%- for o in r.learning_outcomes %}
+        <li>{{ o }}</li>
+        {%- endfor %}
+      </ul>
+      {%- endif %}
+
+      {%- assign body = content | strip -%}
+      {%- if body != "" %}
+      <h2>Notes</h2>
+      {{ content }}
+      {%- endif %}
+
+      {%- if r.testimonials and r.testimonials.size > 0 %}
+      <h2>What users say</h2>
+      <ul class="testimonials">
+        {%- for tm in r.testimonials %}
+        <li class="testimonial">
+          <blockquote class="testimonial__text">{{ tm.text }}</blockquote>
+          <p class="testimonial__provider">
+            {%- if tm.provider.url %}<a href="{{ tm.provider.url }}">{{ tm.provider.name }}</a>{% else %}{{ tm.provider.name }}{% endif -%}
+            {%- if tm.provider.affiliation %}, {{ tm.provider.affiliation }}{% endif -%}
+            {%- if tm.date %} <time datetime="{{ tm.date | date: '%Y-%m-%d' }}">({{ tm.date | date: "%B %Y" }})</time>{% endif -%}
+          </p>
+        </li>
+        {%- endfor %}
+      </ul>
+      {%- endif %}
+    </section>
+
+    <aside class="resource__meta" aria-label="Resource details">
+      <dl>
+        <dt>Lifecycle stage</dt>
+        <dd>{% for sid in r.lifecycle_stages %}{% assign t = site.data.vocab.lifecycle_stage.terms | where: "id", sid | first %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?stage={{ sid }}">{{ t.label | default: sid }}</a> {% endfor %}</dd>
+        <dt>Research area</dt>
+        <dd>{% for aid in r.research_areas %}{% assign t = site.data.vocab.research_area.terms | where: "id", aid | first %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?area={{ aid }}">{{ t.label | default: aid }}</a> {% endfor %}</dd>
+        {%- if r.audience and r.audience.size > 0 %}
+        <dt>Audience</dt>
+        <dd>{% for aud in r.audience %}{% assign t = site.data.vocab.audience.terms | where: "id", aud | first %}{{ t.label | default: aud }}{% unless forloop.last %}, {% endunless %}{% endfor %}</dd>
+        {%- endif %}
+        {%- if r.authors and r.authors.size > 0 %}
+        <dt>Authors</dt>
+        <dd>{% for a in r.authors %}{% if a.orcid %}<a href="{{ a.orcid }}">{{ a.name }}</a>{% elsif a.ror %}<a href="{{ a.ror }}">{{ a.name }}</a>{% else %}{{ a.name }}{% endif %}{% if a.affiliation %} ({{ a.affiliation }}){% endif %}{% unless forloop.last %}; {% endunless %}{% endfor %}</dd>
+        {%- endif %}
+        <dt>Licence</dt>
+        <dd>{% if lic and lic.url != "" %}<a href="{{ lic.url }}">{{ lic.name }}</a>{% elsif lic %}{{ lic.name }}{% else %}{{ r.license.name | default: r.license.id }}{% endif %}</dd>
+        <dt>Version date</dt>
+        <dd><time datetime="{{ r.version_date | date: '%Y-%m-%d' }}">{{ r.version_date | date: "%-d %B %Y" }}</time></dd>
+        <dt>Language</dt>
+        <dd>{{ r.language | default: "en" }}</dd>
+        {%- if r.keywords and r.keywords.size > 0 %}
+        <dt>Keywords</dt>
+        <dd>{{ r.keywords | join: ", " }}</dd>
+        {%- endif %}
+        <dt>Status</dt>
+        <dd>{{ st.label | default: r.status }}</dd>
+        {%- if r.date_added %}
+        <dt>Added to catalogue</dt>
+        <dd><time datetime="{{ r.date_added | date: '%Y-%m-%d' }}">{{ r.date_added | date: "%-d %B %Y" }}</time></dd>
+        {%- endif %}
+      </dl>
+      <p class="resource__edit"><a href="{{ site.github_repo }}/edit/main/_resources/{{ page.path | split: '/' | last }}">Suggest an edit</a></p>
+    </aside>
+  </div>
+</article>

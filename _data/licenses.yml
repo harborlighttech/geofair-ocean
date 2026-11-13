@@ -1,0 +1,35 @@
+# SPDX licence identifiers accepted in `license.id`, with display name and URL.
+# Add rows as needed; validate_resources.py rejects ids not listed here.
+CC0-1.0:
+  name: Creative Commons Zero v1.0 Universal
+  url: https://creativecommons.org/publicdomain/zero/1.0/
+CC-BY-4.0:
+  name: Creative Commons Attribution 4.0 International
+  url: https://creativecommons.org/licenses/by/4.0/
+CC-BY-SA-4.0:
+  name: Creative Commons Attribution Share Alike 4.0 International
+  url: https://creativecommons.org/licenses/by-sa/4.0/
+CC-BY-NC-4.0:
+  name: Creative Commons Attribution Non Commercial 4.0 International
+  url: https://creativecommons.org/licenses/by-nc/4.0/
+CC-BY-NC-SA-4.0:
+  name: Creative Commons Attribution Non Commercial Share Alike 4.0 International
+  url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+MIT:
+  name: MIT License
+  url: https://opensource.org/license/mit
+Apache-2.0:
+  name: Apache License 2.0
+  url: https://www.apache.org/licenses/LICENSE-2.0
+GPL-3.0-or-later:
+  name: GNU General Public License v3.0 or later
+  url: https://www.gnu.org/licenses/gpl-3.0.html
+BSD-3-Clause:
+  name: BSD 3-Clause License
+  url: https://opensource.org/license/bsd-3-clause
+US-Government-Work:
+  name: US Government Work (public domain in the United States)
+  url: https://www.usa.gov/government-works
+LicenseRef-Unknown:
+  name: Licence not stated by the provider
+  url: ""

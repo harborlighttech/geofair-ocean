@@ -1,0 +1,93 @@
+# GeoFAIR Ocean research-area vocabulary (multi-valued).
+# Terms follow the second level of the NASA GCMD Earth Science Keywords under
+# EARTH SCIENCE > OCEANS, plus one marine-biology term and one cross-cutting term.
+# TODO for the domain owner: add each term's GCMD KMS concept URI to `same_as`
+# (look up at https://gcmd.earthdata.nasa.gov/KeywordViewer/ or the ARDC mirror
+# https://vocabs.ardc.edu.au/gcmd-sciencekeywords) and the nearest OECD FOS
+# subclass code to `broad_match` (1.5 Earth and related environmental sciences).
+id: research-area
+name: GeoFAIR Ocean Research Area
+description: Ocean-science topic that a learning resource is about.
+field: research_areas
+cardinality: many
+terms:
+  - id: bathymetry-seafloor-topography
+    label: Bathymetry and seafloor topography
+    definition: Depth measurement and mapping of the sea floor.
+    same_as: []
+  - id: coastal-processes
+    label: Coastal processes
+    definition: Physical and sedimentary processes at the land–sea boundary.
+    same_as: []
+  - id: marine-geophysics
+    label: Marine geophysics
+    definition: Geophysical structure and properties of the ocean crust and margins.
+    same_as: []
+  - id: marine-sediments
+    label: Marine sediments
+    definition: Composition, distribution and transport of seafloor sediments.
+    same_as: []
+  - id: ocean-acoustics
+    label: Ocean acoustics
+    definition: Sound propagation and acoustic observation in the ocean.
+    same_as: []
+  - id: ocean-chemistry
+    label: Ocean chemistry
+    definition: Chemical properties of seawater including carbon, nutrients and oxygen.
+    same_as: []
+  - id: ocean-circulation
+    label: Ocean circulation
+    definition: Currents, mixing and large-scale ocean transport.
+    same_as: []
+  - id: ocean-heat-budget
+    label: Ocean heat budget
+    definition: Heat storage and exchange between ocean and atmosphere.
+    same_as: []
+  - id: ocean-optics
+    label: Ocean optics
+    definition: Light in the ocean, ocean colour and optical properties.
+    same_as: []
+  - id: ocean-temperature
+    label: Ocean temperature
+    definition: Sea-surface and water-column temperature.
+    same_as: []
+  - id: ocean-waves
+    label: Ocean waves
+    definition: Surface and internal waves, swell and wave spectra.
+    same_as: []
+  - id: ocean-winds
+    label: Ocean winds
+    definition: Surface winds over the ocean and wind stress.
+    same_as: []
+  - id: salinity-density
+    label: Salinity and density
+    definition: Salinity, conductivity and density of seawater.
+    same_as: []
+  - id: sea-ice
+    label: Sea ice
+    definition: Sea-ice extent, concentration, thickness and motion.
+    same_as: []
+  - id: sea-surface-topography
+    label: Sea surface topography
+    definition: Sea level, sea surface height and altimetry.
+    same_as: []
+  - id: tides
+    label: Tides
+    definition: Tidal heights, currents and constituents.
+    same_as: []
+  - id: water-quality
+    label: Water quality
+    definition: Contaminants, turbidity and other indicators of marine water quality.
+    same_as: []
+  - id: marine-ecosystems
+    label: Marine ecosystems and biology
+    definition: Marine organisms, habitats and biological oceanography.
+    same_as: []
+  - id: ocean-observing-systems
+    label: Ocean observing systems
+    definition: Platforms, sensors and networks that observe the ocean (floats, gliders, moorings, ships, satellites).
+    same_as: []
+  - id: research-data-management
+    label: Research data management (cross-cutting)
+    definition: Data management, FAIR practice and metadata resources that are not specific to one ocean topic.
+    same_as: []

@@ -1,0 +1,16 @@
+{%- comment -%}
+Emits one schema:DefinedTerm for a vocabulary term.
+Parameters: vocab (a _data/vocab/* object), term_id (string).
+Unknown ids emit a DefinedTerm with only termCode so the build never breaks; CI rejects them.
+{%- endcomment -%}
+{%- assign t = include.vocab.terms | where: "id", include.term_id | first -%}
+{%- assign set_url = site.url | append: site.baseurl | append: "/vocab/" | append: include.vocab.id | append: "/" -%}
+{%- if t -%}
+{"@type":"DefinedTerm","name":{{ t.label | jsonify }},"termCode":{{ t.id | jsonify }},"inDefinedTermSet":{{ set_url | jsonify }}
+{%- if t.definition %},"description":{{ t.definition | jsonify }}{% endif -%}
+{%- if t.same_as %}{% if t.same_as.size > 0 %},"sameAs":{{ t.same_as | jsonify }}{% endif %}{% endif -%}
+{%- if t.broad_match %},"broadMatch":{{ t.broad_match | jsonify }}{% endif -%}
+}
+{%- else -%}
+{"@type":"DefinedTerm","termCode":{{ include.term_id | jsonify }},"inDefinedTermSet":{{ set_url | jsonify }}}
+{%- endif -%}

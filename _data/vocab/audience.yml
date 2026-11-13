@@ -1,0 +1,25 @@
+# Target audience (multi-valued). Emitted as schema:EducationalAudience/audienceType.
+id: audience
+name: GeoFAIR Audience
+description: Principal users a learning resource was designed for.
+field: audience
+cardinality: many
+terms:
+  - id: researcher
+    label: Researcher
+    definition: Scientists producing or analysing ocean data.
+  - id: data-steward
+    label: Data steward or data manager
+    definition: Staff responsible for curating, documenting and publishing data.
+  - id: student
+    label: Student
+    definition: Undergraduate and graduate students.
+  - id: educator
+    label: Educator or trainer
+    definition: People teaching data skills who want material to reuse.
+  - id: infrastructure-staff
+    label: Repository or infrastructure staff
+    definition: Operators of repositories, data centres and observing networks.
+  - id: policy-maker
+    label: Policy maker or funder
+    definition: People setting data policy or funding requirements.

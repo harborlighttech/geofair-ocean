@@ -1,0 +1,29 @@
+# Catalogue-entry status (single-valued). Emitted as schema:creativeWorkStatus.
+# draft and in-review pages build (so reviewers can see them) but are noindex
+# and never enter the search index; obsolete entries are indexed but hidden
+# in the search page until the visitor opts in.
+id: status
+name: GeoFAIR Entry Status
+description: Editorial and currency status of a catalogue entry.
+field: status
+cardinality: one
+terms:
+  - id: draft
+    label: Draft
+    definition: Being written; not yet submitted for review.
+    same_as:
+      - http://purl.org/spar/pso/draft
+  - id: in-review
+    label: In review
+    definition: Submitted and awaiting maintainer review.
+    same_as:
+      - http://purl.org/spar/pso/under-review
+  - id: published
+    label: Published
+    definition: Reviewed and live in the catalogue.
+    same_as:
+      - http://purl.org/spar/pso/published
+  - id: obsolete
+    label: Obsolete
+    definition: No longer current; kept for the record and, where known, pointing to a replacement.
+    same_as: []

@@ -1,0 +1,19 @@
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <ul class="site-footer__links">
+      {%- for item in site.footer_links %}
+      <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+      {%- endfor %}
+      <li><a href="{{ '/resources.jsonld' | relative_url }}">Catalogue as JSON-LD</a></li>
+      {%- if site.contact_email and site.contact_email != "" %}
+      <li><a href="mailto:{{ site.contact_email }}">Contact</a></li>
+      {%- endif %}
+    </ul>
+    <p class="site-footer__note">
+      {{ site.organization }} · {{ site.domain }} domain · Catalogue metadata follows the
+      <a href="https://doi.org/10.15497/RDA00073">RDA Minimal Metadata for Learning Resources</a>
+      and is published as <a href="https://schema.org/LearningResource">Schema.org LearningResource</a> JSON-LD.
+      Site content is CC BY 4.0 unless stated otherwise.
+    </p>
+  </div>
+</footer>

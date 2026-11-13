@@ -1,0 +1,54 @@
+# GeoFAIR lifecycle-stage vocabulary.
+# Labels follow the RDMkit (ELIXIR) research data life cycle; "describe" is
+# added from the USGS Science Data Lifecycle Model's cross-cutting elements.
+# `same_as` links point at the equivalent stage pages of both models.
+id: lifecycle-stage
+name: GeoFAIR Lifecycle Stage
+description: Stage of the research data lifecycle that a learning resource supports.
+field: lifecycle_stages
+cardinality: many
+terms:
+  - id: plan
+    label: Plan
+    definition: Designing how data will be managed before any data is collected, including data management plans, formats and repositories.
+    same_as:
+      - https://rdmkit.elixir-europe.org/planning
+      - https://www.usgs.gov/data-management/plan
+  - id: collect
+    label: Collect
+    definition: Acquiring data by observation, measurement, simulation or from existing sources.
+    same_as:
+      - https://rdmkit.elixir-europe.org/collecting
+      - https://www.usgs.gov/data-management/acquire
+  - id: process
+    label: Process
+    definition: Verifying, organising, transforming and converting data into forms fit for analysis and sharing.
+    same_as:
+      - https://rdmkit.elixir-europe.org/processing
+      - https://www.usgs.gov/data-management/process
+  - id: analyse
+    label: Analyse
+    definition: Interpreting data to detect patterns, test hypotheses and produce results.
+    same_as:
+      - https://rdmkit.elixir-europe.org/analysing
+      - https://www.usgs.gov/data-management/analyze
+  - id: preserve
+    label: Preserve
+    definition: Keeping data and metadata usable over the long term in a trusted repository.
+    same_as:
+      - https://rdmkit.elixir-europe.org/preserving
+      - https://www.usgs.gov/data-management/preserve
+  - id: share
+    label: Share
+    definition: Publishing data with appropriate access conditions, identifiers and licences.
+    same_as:
+      - https://rdmkit.elixir-europe.org/sharing
+  - id: reuse
+    label: Reuse
+    definition: Finding, assessing and using data produced by others.
+    same_as:
+      - https://rdmkit.elixir-europe.org/reusing
+  - id: describe
+    label: Describe
+    definition: Creating metadata and documentation so data can be understood; cross-cutting across all stages.
+    same_as: []

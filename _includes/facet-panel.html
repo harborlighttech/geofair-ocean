@@ -1,0 +1,45 @@
+{%- comment -%}
+Facet panel rendered at build time from the vocabulary files (term order preserved).
+assets/js/facets.js fills in counts, applies filters and keeps the URL in sync.
+Each fieldset carries data-facet (query-string key) and data-set (vocab id used to
+pick DefinedTerms out of the JSON-LD "about" array, or a property name).
+{%- endcomment -%}
+<aside class="facets" id="facets" aria-label="Filter resources">
+  <h2 class="facets__title">Filter</h2>
+  {%- for f in site.catalogue.facets %}
+  {%- assign v = site.data.vocab[f] -%}
+  {%- case f -%}
+    {%- when "lifecycle_stage" %}{% assign key = "stage" %}{% assign src = "about" %}
+    {%- when "research_area" %}{% assign key = "area" %}{% assign src = "about" %}
+    {%- when "resource_type" %}{% assign key = "type" %}{% assign src = "learningResourceType" %}
+    {%- when "expertise_level" %}{% assign key = "level" %}{% assign src = "educationalLevel" %}
+    {%- when "audience" %}{% assign key = "audience" %}{% assign src = "audience" %}
+    {%- else %}{% assign key = f %}{% assign src = "about" %}
+  {%- endcase %}
+  <fieldset class="facet" data-facet="{{ key }}" data-set="{{ v.id }}" data-source="{{ src }}">
+    <legend>{{ v.name | replace: "GeoFAIR ", "" | replace: site.domain, "" | strip }}</legend>
+    <ul class="facet__list">
+      {%- for t in v.terms %}
+      <li class="facet__item">
+        <input type="checkbox" id="f-{{ key }}-{{ t.id }}" name="{{ key }}" value="{{ t.id }}">
+        <label for="f-{{ key }}-{{ t.id }}" title="{{ t.definition | escape }}">{{ t.label }}</label>
+        <span class="facet__count" data-count-for="{{ t.id }}"></span>
+      </li>
+      {%- endfor %}
+    </ul>
+  </fieldset>
+  {%- endfor %}
+  <fieldset class="facet" data-facet="free" data-source="isAccessibleForFree">
+    <legend>Cost</legend>
+    <ul class="facet__list">
+      <li class="facet__item"><input type="checkbox" id="f-free" name="free" value="1"><label for="f-free">Free of charge only</label><span class="facet__count" data-count-for="1"></span></li>
+    </ul>
+  </fieldset>
+  <fieldset class="facet" data-facet="obsolete" data-source="creativeWorkStatus">
+    <legend>Status</legend>
+    <ul class="facet__list">
+      <li class="facet__item"><input type="checkbox" id="f-obsolete" name="obsolete" value="1"><label for="f-obsolete">Include obsolete resources</label><span class="facet__count" data-count-for="1"></span></li>
+    </ul>
+  </fieldset>
+  <p class="facets__reset"><button type="button" class="button button--ghost" id="facets-reset">Clear filters</button></p>
+</aside>

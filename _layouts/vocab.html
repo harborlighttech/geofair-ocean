@@ -1,0 +1,40 @@
+---
+layout: default
+---
+{%- assign v = site.data.vocab[page.vocab] -%}
+{%- assign set_url = site.url | append: site.baseurl | append: "/vocab/" | append: v.id | append: "/" -%}
+<script type="application/ld+json">
+{
+  "@context": {"@vocab": "https://schema.org/", "broadMatch": "http://www.w3.org/2004/02/skos/core#broadMatch"},
+  "@type": "DefinedTermSet",
+  "@id": {{ set_url | jsonify }},
+  "name": {{ v.name | jsonify }},
+  "description": {{ v.description | jsonify }},
+  "hasDefinedTerm": [
+    {%- for t in v.terms %}
+    {% include jsonld/term.html vocab=v term_id=t.id %}{% unless forloop.last %},{% endunless %}
+    {%- endfor %}
+  ]
+}
+</script>
+<h1>{{ v.name }}</h1>
+<p class="lead">{{ v.description }}</p>
+<p class="muted">Field <code>{{ v.field }}</code> · {% if v.cardinality == "many" %}one or more values{% else %}single value{% endif %} · {{ v.terms | size }} terms · <a href="{{ set_url }}">{{ set_url }}</a></p>
+<table class="vocab-table">
+  <thead><tr><th>Id</th><th>Label</th><th>Definition</th><th>Mappings</th></tr></thead>
+  <tbody>
+    {%- for t in v.terms %}
+    <tr id="{{ t.id }}">
+      <td><code>{{ t.id }}</code></td>
+      <td>{{ t.label }}</td>
+      <td>{{ t.definition }}</td>
+      <td>
+        {%- if t.same_as %}{% for u in t.same_as %}<a href="{{ u }}">sameAs</a> {% endfor %}{% endif -%}
+        {%- if t.broad_match %}<a href="{{ t.broad_match }}">broadMatch</a> {% endif -%}
+        {%- if t.close_match %}<span title="DataCite resourceTypeGeneral">DataCite: {{ t.close_match }}</span>{% endif -%}
+      </td>
+    </tr>
+    {%- endfor %}
+  </tbody>
+</table>
+{{ content }}

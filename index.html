@@ -1,0 +1,41 @@
+---
+layout: default
+permalink: /
+---
+{%- assign published = site.resources | where: "status", "published" -%}
+<section class="hero">
+  {%- if site.hero_image and site.hero_image != "" %}
+  <img class="hero__image" src="{% if site.hero_image contains '://' %}{{ site.hero_image }}{% else %}{{ site.hero_image | relative_url }}{% endif %}" alt="">
+  {%- if site.hero_credit != "" %}<p class="hero__credit">{{ site.hero_credit }}</p>{% endif %}
+  {%- endif %}
+  <h1 class="hero__title">{{ site.title }}</h1>
+  <p class="hero__tagline">{{ site.tagline }}</p>
+  <p><a class="button" href="{{ '/resources/' | relative_url }}">Browse {{ published | size }} resources</a>
+     <a class="button button--ghost" href="{{ '/contribute/' | relative_url }}">Suggest a resource</a></p>
+</section>
+
+<ul class="tiles">
+  {%- for t in site.data.vocab.lifecycle_stage.terms %}
+  {%- assign n = 0 -%}
+  {%- for r in published %}{% if r.lifecycle_stages contains t.id %}{% assign n = n | plus: 1 %}{% endif %}{% endfor -%}
+  <li><a class="tile" href="{{ '/resources/' | relative_url }}?stage={{ t.id }}">
+    <p class="tile__title">{{ t.label }}</p>
+    <p class="tile__text">{{ t.definition }}</p>
+    <p class="tile__text"><strong>{{ n }}</strong> resource{% if n != 1 %}s{% endif %}</p>
+  </a></li>
+  {%- endfor %}
+</ul>
+
+<h2>Recently added</h2>
+<div class="cards">
+  {%- assign recent = published | sort: "date_added", "first" | reverse -%}
+  {%- for r in recent limit: site.catalogue.recent_count %}
+  {% include resource-card.html resource=r %}
+  {%- endfor %}
+</div>
+
+<h2>How the catalogue is built</h2>
+<p>Every resource is described with the <a href="https://doi.org/10.15497/RDA00073">RDA Minimal Metadata for Learning Resources</a>
+plus four {{ site.organization }} facets, published as <a href="https://schema.org/LearningResource">Schema.org LearningResource</a> JSON-LD
+on each page and as one <a href="{{ '/resources.jsonld' | relative_url }}">catalogue file</a>. The terms behind the facets are
+documented under <a href="{{ '/vocab/' | relative_url }}">Vocabularies</a>.</p>

@@ -1,0 +1,104 @@
+{%- comment -%}
+Emits one schema:LearningResource JSON object (no <script> wrapper) for a resource document.
+Parameter: resource (a document from site.resources).
+Used by _layouts/resource.html, resources/index.html and resources.jsonld, so the
+structured data on every page comes from this one template.
+{%- endcomment -%}
+{%- assign r = include.resource -%}
+{%- assign site_root = site.url | append: site.baseurl -%}
+{%- assign page_url = site_root | append: r.url -%}
+{%- assign lic = site.data.licenses[r.license.id] -%}
+{%- assign rtype = site.data.vocab.resource_type.terms | where: "id", r.resource_type | first -%}
+{%- comment -%} keywords = free keywords + every facet label {%- endcomment -%}
+{%- if r.keywords %}{% assign kw = r.keywords %}{% else %}{% assign kw = "" | split: "," %}{% endif -%}
+{%- for sid in r.lifecycle_stages %}{% assign t = site.data.vocab.lifecycle_stage.terms | where: "id", sid | first %}{% if t %}{% assign kw = kw | push: t.label %}{% endif %}{% endfor -%}
+{%- for aid in r.research_areas %}{% assign t = site.data.vocab.research_area.terms | where: "id", aid | first %}{% if t %}{% assign kw = kw | push: t.label %}{% endif %}{% endfor -%}
+{%- if rtype %}{% assign kw = kw | push: rtype.label %}{% endif -%}
+{%- assign kw = kw | uniq -%}
+{
+  "@context": {"@vocab": "https://schema.org/", "dct": "http://purl.org/dc/terms/", "broadMatch": "http://www.w3.org/2004/02/skos/core#broadMatch"},
+  "@type": "LearningResource",
+  "@id": {{ page_url | jsonify }},
+  "mainEntityOfPage": {{ page_url | jsonify }},
+  "dct:conformsTo": {"@id": {{ site.catalogue.conforms_to | jsonify }}},
+  "name": {{ r.title | jsonify }},
+  "description": {{ r.description | jsonify }},
+  "url": {{ r.resource_url | jsonify }},
+  {%- assign pid = r.identifier | default: "" -%}
+  {%- if pid == "" and r.url_type and r.url_type != "URL" %}{% assign pid = r.resource_url %}{% endif -%}
+  {%- if pid != "" %}
+  "identifier": {{ pid | jsonify }},
+  "sameAs": {{ pid | jsonify }},
+  {%- endif %}
+  "learningResourceType": {% include jsonld/term.html vocab=site.data.vocab.resource_type term_id=r.resource_type %},
+  {%- if rtype and rtype.close_match %}
+  "additionalType": {{ rtype.close_match | jsonify }},
+  {%- endif %}
+  {%- if lic and lic.url != "" %}
+  "license": {{ lic.url | jsonify }},
+  {%- elsif r.license.url %}
+  "license": {{ r.license.url | jsonify }},
+  {%- endif %}
+  "dateModified": {{ r.version_date | date: "%Y-%m-%d" | jsonify }},
+  {%- if r.date_added %}
+  "sdDatePublished": {{ r.date_added | date: "%Y-%m-%d" | jsonify }},
+  {%- endif %}
+  {%- if r.authors and r.authors.size > 0 %}
+  "author": [
+    {%- for a in r.authors %}
+    {"@type": {{ a.type | default: "Person" | jsonify }}, "name": {{ a.name | jsonify }}
+      {%- if a.orcid %}, "identifier": {{ a.orcid | jsonify }}{% elsif a.ror %}, "identifier": {{ a.ror | jsonify }}{% endif -%}
+      {%- if a.affiliation %}, "affiliation": {"@type": "Organization", "name": {{ a.affiliation | jsonify }}}{% endif -%}
+    }{% unless forloop.last %},{% endunless %}
+    {%- endfor %}
+  ],
+  {%- endif %}
+  "inLanguage": {{ r.language | default: "en" | jsonify }},
+  "keywords": {{ kw | jsonify }},
+  {%- if r.audience and r.audience.size > 0 %}
+  "audience": [
+    {%- for aud in r.audience %}
+    {%- assign at = site.data.vocab.audience.terms | where: "id", aud | first %}
+    {"@type": "EducationalAudience", "audienceType": {{ at.label | default: aud | jsonify }}}{% unless forloop.last %},{% endunless %}
+    {%- endfor %}
+  ],
+  {%- endif %}
+  {%- if r.learning_outcomes and r.learning_outcomes.size > 0 %}
+  "teaches": {{ r.learning_outcomes | jsonify }},
+  {%- endif %}
+  "isAccessibleForFree": {% if r.access_cost == "yes" or r.access_cost == "maybe" %}false{% else %}true{% endif %},
+  {%- if r.expertise_level %}
+  "educationalLevel": {% include jsonld/term.html vocab=site.data.vocab.expertise_level term_id=r.expertise_level %},
+  {%- endif %}
+  "about": [
+    {%- for sid in r.lifecycle_stages %}
+    {% include jsonld/term.html vocab=site.data.vocab.lifecycle_stage term_id=sid %}{% unless forloop.last %},{% endunless %}
+    {%- endfor %}
+    {%- if r.lifecycle_stages.size > 0 and r.research_areas.size > 0 %},{% endif %}
+    {%- for aid in r.research_areas %}
+    {% include jsonld/term.html vocab=site.data.vocab.research_area term_id=aid %}{% unless forloop.last %},{% endunless %}
+    {%- endfor %}
+  ],
+  "creativeWorkStatus": {% include jsonld/term.html vocab=site.data.vocab.status term_id=r.status %},
+  {%- if r.superseded_by %}
+  {%- assign sup = r.superseded_by -%}
+  {%- unless sup contains "://" %}{% assign sup = site_root | append: "/resources/" | append: sup | append: "/" %}{% endunless %}
+  "dct:isReplacedBy": {"@id": {{ sup | jsonify }}},
+  {%- endif %}
+  {%- if r.testimonials and r.testimonials.size > 0 %}
+  "review": [
+    {%- for tm in r.testimonials %}
+    {"@type": "Review", "reviewBody": {{ tm.text | jsonify }},
+     "author": {"@type": {{ tm.provider.type | default: "Person" | jsonify }}, "name": {{ tm.provider.name | jsonify }}
+       {%- if tm.provider.affiliation %}, "affiliation": {"@type": "Organization", "name": {{ tm.provider.affiliation | jsonify }}}{% endif -%}
+       {%- if tm.provider.url %}, "url": {{ tm.provider.url | jsonify }}{% endif -%}
+     }{% if tm.date %}, "datePublished": {{ tm.date | date: "%Y-%m-%d" | jsonify }}{% endif %}
+    }{% unless forloop.last %},{% endunless %}
+    {%- endfor %}
+  ],
+  {%- endif %}
+  {%- if r.image %}
+  "image": {{ r.image | absolute_url | jsonify }},
+  {%- endif %}
+  "isPartOf": {"@type": "Collection", "@id": {{ site_root | append: "/resources/" | jsonify }}, "name": {{ site.title | jsonify }}}
+}

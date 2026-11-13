@@ -1,0 +1,60 @@
+# GeoFAIR resource-type vocabulary (single-valued).
+# Each term has a `broad_match` to the LRMI Learning Resource Type concept
+# scheme (the vocabulary the RDA recommendation points to) and a `close_match`
+# to a DataCite resourceTypeGeneral value, emitted as schema:additionalType.
+id: resource-type
+name: GeoFAIR Resource Type
+description: The predominant kind of learning resource.
+field: resource_type
+cardinality: one
+terms:
+  - id: tutorial
+    label: Tutorial
+    definition: A step-by-step, hands-on lesson that a learner works through at their own pace.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/activityPlan
+    close_match: InteractiveResource
+  - id: online-course
+    label: Online course
+    definition: A structured sequence of lessons with a defined scope, often with assessment.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/unitPlan
+    close_match: InteractiveResource
+  - id: recorded-lecture
+    label: Recorded lecture or webinar
+    definition: An audio or video recording of a lecture, talk or webinar.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/recordedLesson
+    close_match: Audiovisual
+  - id: video
+    label: Video
+    definition: A produced instructional video that is not a recording of a live event.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/recordedLesson
+    close_match: Audiovisual
+  - id: slide-deck
+    label: Slide deck
+    definition: Presentation slides intended to be read or reused for teaching.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/supportingDocument
+    close_match: Presentation
+  - id: guide
+    label: Guide or handbook
+    definition: A written document explaining practices, standards or procedures.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/supportingDocument
+    close_match: Text
+  - id: template
+    label: Template or checklist
+    definition: A fill-in document or checklist that learners apply to their own work.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/supportingDocument
+    close_match: Text
+  - id: notebook
+    label: Computational notebook
+    definition: An executable notebook (Jupyter, R Markdown, Quarto) combining code and explanation.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/activityPlan
+    close_match: ComputationalNotebook
+  - id: interactive-tool
+    label: Interactive tool
+    definition: A web application or tool used for learning by doing.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/activityPlan
+    close_match: InteractiveResource
+  - id: reference
+    label: Reference material
+    definition: Glossaries, cheat sheets, standards summaries and other look-up material.
+    broad_match: http://purl.org/dcx/lrmi-vocabs/learningResourceType/supportingDocument
+    close_match: Text

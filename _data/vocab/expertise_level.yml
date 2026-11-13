@@ -1,0 +1,16 @@
+# Expertise level (single-valued). Emitted as schema:educationalLevel.
+id: expertise-level
+name: GeoFAIR Expertise Level
+description: Skill level in the topic that a resource assumes.
+field: expertise_level
+cardinality: one
+terms:
+  - id: beginner
+    label: Beginner
+    definition: No prior knowledge of the topic assumed.
+  - id: intermediate
+    label: Intermediate
+    definition: Working familiarity with the topic assumed.
+  - id: advanced
+    label: Advanced
+    definition: Deep familiarity assumed; focuses on specialist practice.
