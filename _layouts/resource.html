@@ -30,8 +30,8 @@ layout: default
   <div class="resource__grid">
     <section class="resource__body">
       <p class="resource__eyebrow">
-        <span class="chip chip--type">{{ rtype.label | default: r.resource_type }}</span>
-        {%- if level %} <span class="chip">{{ level.label }}</span>{% endif %}
+        <span class="chip chip--type" title="Resource type: {{ rtype.definition | escape }}">{{ rtype.label | default: r.resource_type }}</span>
+        {%- if level %} <span class="chip" title="Expertise level: {{ level.definition | escape }}">{{ level.label }}</span>{% endif %}
         {%- if cost %} <span class="chip{% if cost_id == "no" %} chip--free{% endif %}" title="{{ cost.definition | escape }}">{{ cost.label }}</span>{% endif %}
       </p>
       <h1 class="resource__title">{{ r.title }}</h1>
@@ -76,9 +76,9 @@ layout: default
     <aside class="resource__meta" aria-label="Resource details">
       <dl>
         <dt>Lifecycle stage</dt>
-        <dd>{% for sid in r.lifecycle_stages %}{% assign t = site.data.vocab.lifecycle_stage.terms | where: "id", sid | first %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?stage={{ sid }}">{{ t.label | default: sid }}</a> {% endfor %}</dd>
+        <dd>{% for sid in r.lifecycle_stages %}{% assign t = site.data.vocab.lifecycle_stage.terms | where: "id", sid | first %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?stage={{ sid }}" title="{{ t.definition | escape }}">{{ t.label | default: sid }}</a> {% endfor %}</dd>
         <dt>Research area</dt>
-        <dd>{% for aid in r.research_areas %}{% assign t = site.data.vocab.research_area.terms | where: "id", aid | first %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?area={{ aid }}">{{ t.label | default: aid }}</a> {% endfor %}</dd>
+        <dd>{% for aid in r.research_areas %}{% assign t = site.data.vocab.research_area.terms | where: "id", aid | first %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?area={{ aid }}" title="{{ t.definition | escape }}">{{ t.label | default: aid }}</a> {% endfor %}</dd>
         {%- if r.audience and r.audience.size > 0 %}
         <dt>Audience</dt>
         <dd>{% for aud in r.audience %}{% assign t = site.data.vocab.audience.terms | where: "id", aud | first %}{{ t.label | default: aud }}{% unless forloop.last %}, {% endunless %}{% endfor %}</dd>

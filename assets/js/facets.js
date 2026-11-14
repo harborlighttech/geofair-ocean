@@ -24,6 +24,7 @@
   }
   function code(t) { return t && typeof t === 'object' ? t.termCode : t; }
   function label(t) { return t && typeof t === 'object' ? (t.name || t.termCode) : t; }
+  function desc(t) { return t && typeof t === 'object' ? (t.description || '') : ''; }
 
   var items = raw.map(function (it) {
     var stages = termsIn('lifecycle-stage', it.about);
@@ -32,16 +33,18 @@
     var level = it.educationalLevel;
     var status = code(it.creativeWorkStatus) || 'published';
     var cost = it.conditionsOfAccess;
+    var statusTerm = it.creativeWorkStatus;
     var authors = arr(it.author).map(function (a) { return a && a.name ? a.name : ''; });
     var text = [it.name, it.description, arr(it.keywords).join(' '), arr(it.teaches).join(' '), authors.join(' '),
                 stages.map(label).join(' '), areas.map(label).join(' '), label(type), label(level)].join(' ').toLowerCase();
     return {
       id: it['@id'], name: it.name, description: it.description || '', url: it.url,
-      type: code(type), typeLabel: label(type), level: code(level), levelLabel: label(level),
-      stage: stages.map(code), stageLabels: stages.map(label),
-      area: areas.map(code), areaLabels: areas.map(label),
+      type: code(type), typeLabel: label(type), typeDesc: desc(type), level: code(level), levelLabel: label(level), levelDesc: desc(level),
+      stage: stages.map(code), stageLabels: stages.map(label), stageDescs: stages.map(desc),
+      area: areas.map(code), areaLabels: areas.map(label), areaDescs: areas.map(desc),
+      statusLabel: label(statusTerm), statusDesc: desc(statusTerm),
       audience: arr(it.audience).map(function (a) { return a && a.audienceType ? a.audienceType : a; }),
-      cost: code(cost) || (it.isAccessibleForFree === false ? 'yes' : 'no'), costLabel: label(cost),
+      cost: code(cost) || (it.isAccessibleForFree === false ? 'yes' : 'no'), costLabel: label(cost), costDesc: desc(cost),
       free: it.isAccessibleForFree === true, status: status, text: text
     };
   });
@@ -107,16 +110,16 @@
 
   /* ---- Rendering --------------------------------------------------------- */
   function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function chip(txt, cls) { return '<span class="chip ' + (cls || '') + '">' + esc(txt) + '</span>'; }
+  function chip(txt, cls, tip) { return '<span class="chip ' + (cls || '') + '"' + (tip ? ' title="' + esc(tip) + '"' : '') + '>' + esc(txt) + '</span>'; }
   function card(it) {
     var desc = it.description.length > 200 ? it.description.slice(0, 197).replace(/\s+\S*$/, '') + '…' : it.description;
     return '<article class="card">' +
-      '<p class="card__eyebrow">' + (it.typeLabel ? chip(it.typeLabel, 'chip--type') + ' ' : '') + (it.levelLabel ? chip(it.levelLabel) + ' ' : '') +
-        (it.costLabel ? chip(it.costLabel, it.free ? 'chip--free' : '') + ' ' : '') + (it.status === 'obsolete' ? chip('Obsolete', 'chip--warning') : '') + '</p>' +
+      '<p class="card__eyebrow">' + (it.typeLabel ? chip(it.typeLabel, 'chip--type', 'Resource type: ' + it.typeDesc) + ' ' : '') + (it.levelLabel ? chip(it.levelLabel, '', 'Expertise level: ' + it.levelDesc) + ' ' : '') +
+        (it.costLabel ? chip(it.costLabel, it.free ? 'chip--free' : '', it.costDesc) + ' ' : '') + (it.status === 'obsolete' ? chip(it.statusLabel || 'Obsolete', 'chip--warning', it.statusDesc) : '') + '</p>' +
       '<h3 class="card__title"><a href="' + esc(it.id) + '">' + esc(it.name) + '</a></h3>' +
       '<p class="card__description">' + esc(desc) + '</p>' +
-      '<p class="card__chips">' + it.stageLabels.map(function (l) { return chip(l, 'chip--stage'); }).join(' ') + ' ' +
-        it.areaLabels.map(function (l) { return chip(l, 'chip--area'); }).join(' ') + '</p>' +
+      '<p class="card__chips">' + it.stageLabels.map(function (l, i) { return chip(l, 'chip--stage', 'Lifecycle stage: ' + it.stageDescs[i]); }).join(' ') + ' ' +
+        it.areaLabels.map(function (l, i) { return chip(l, 'chip--area', 'Research area: ' + it.areaDescs[i]); }).join(' ') + '</p>' +
       (it.url ? '<p class="card__links"><a href="' + esc(it.url) + '" target="_blank" rel="noopener">Open resource ↗<span class="sr-only"> (opens in a new tab)</span></a></p>' : '') +
       '</article>';
   }
