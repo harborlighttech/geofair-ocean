@@ -117,7 +117,7 @@
       '<p class="card__description">' + esc(desc) + '</p>' +
       '<p class="card__chips">' + it.stageLabels.map(function (l) { return chip(l, 'chip--stage'); }).join(' ') + ' ' +
         it.areaLabels.map(function (l) { return chip(l, 'chip--area'); }).join(' ') + '</p>' +
-      (it.url ? '<p class="card__links"><a href="' + esc(it.url) + '" rel="noopener">Open resource ↗</a></p>' : '') +
+      (it.url ? '<p class="card__links"><a href="' + esc(it.url) + '" target="_blank" rel="noopener">Open resource ↗<span class="sr-only"> (opens in a new tab)</span></a></p>' : '') +
       '</article>';
   }
 

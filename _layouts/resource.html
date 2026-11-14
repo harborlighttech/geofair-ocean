@@ -38,8 +38,8 @@ layout: default
       <p class="resource__description">{{ r.description }}</p>
 
       <p class="resource__cta">
-        <a class="button" href="{{ r.resource_url }}" rel="noopener">Open the resource <span aria-hidden="true">↗</span></a>
-        {%- if r.identifier %} <a class="resource__pid" href="{{ r.identifier }}">{{ r.identifier }}</a>{% endif %}
+        <a class="button" href="{{ r.resource_url }}" target="_blank" rel="noopener">Open the resource <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+        {%- if r.identifier %} <a class="resource__pid" href="{{ r.identifier }}" target="_blank" rel="noopener">{{ r.identifier }}</a>{% endif %}
       </p>
       {%- if r.learning_outcomes and r.learning_outcomes.size > 0 %}
       <h2>What you will learn</h2>
