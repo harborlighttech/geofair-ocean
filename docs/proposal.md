@@ -1,8 +1,10 @@
 # GeoFAIR Resource Hub — Jekyll Faceted Resource Catalog: Proposal
 
-Nov 6, 2026 · @Adam Shepherd
+Nov 6, 2026 · @Adam Shepherd · revised Nov 14, 2026 to match the implementation in [harborlighttech/geofair-ocean](https://github.com/harborlighttech/geofair-ocean)
 
 ## Summary
+
+**Status (14 Nov 2026).** The plan below has been implemented as the Ocean instance of the hub and is live at <https://harborlighttech.github.io/geofair-ocean/>. Phases 0–4 are complete; Phase 5 (real content, remaining `TODO` values) is in progress. Where the implementation departed from the original plan, the text has been updated and the change is listed under *Changes since the original plan* at the end.
 
 The GeoFAIR Resource Hub is a Jekyll site on GitHub Pages that catalogues external learning and training resources, one Markdown file per resource, and offers a faceted search page driven entirely by Schema.org JSON-LD generated at build time. Each resource's front matter is an application profile of the RDA *Minimal Metadata for Learning Resources* (all 14 elements present, 6 required) extended with four GeoFAIR facets (lifecycle stage, resource type, research area, status) and testimonials. Jekyll renders every resource page with a `schema:LearningResource` JSON-LD block (testimonials as `schema:Review`, vocabulary terms as `schema:DefinedTerm`), and the search page embeds one `schema:ItemList` of those same objects, which a small dependency-free script filters client-side. No Jekyll plugins are needed; the site builds in GitHub Actions, where a validation step checks every resource against a JSON Schema before deploy, and contributors add resources through a GitHub Issue form that opens a pull request.
 
@@ -12,42 +14,46 @@ Key design decisions, from your answers:
 | --- | --- |
 | What is catalogued | External learning/training materials; every entry is a `schema:LearningResource` and links out via RDA *URL to Resource* |
 | RDA coverage | All 14 elements in the schema; Title, Description, URL, Resource Type, License, Version Date required; the rest optional with defaults |
-| Controlled vocabularies | Survey existing vocabularies first (DataCite, LRMI, USGS, NASA GCMD, OECD, Schema.org); adopt, map or create per facet — candidates and a recommendation are in the vocabulary section |
+| Controlled vocabularies | Seven site-published `DefinedTermSet`s under `_data/vocab/`: lifecycle stage, resource type, research area, status, audience, expertise level and access cost. Each term links to its external equivalents (`same_as`, `broad_match`, `close_match`); candidates considered are in the vocabulary section |
 | Cardinality | Lifecycle stage and research area multi-valued; resource type and status single-valued |
 | Testimonials | `schema:Review` with `reviewBody` and `author` (Person or Organization) |
 | Status | Draft, In Review, Published, Obsolete via `schema:creativeWorkStatus`; Draft and In Review build but are excluded from the search index and marked `noindex`; Obsolete is shown but filtered out until the visitor opts in |
-| Identifiers | Resource page URL is the record's `@id`; the described material's own DOI/handle goes in `identifier` and `url` |
+| Identifiers | Resource page URL is the record's `@id`; the described material's own DOI/handle goes in `identifier` and `resource_url` (the front-matter field is `resource_url`, not `url`, because Jekyll reserves `url` for a document's own page path) |
 | Build | GitHub Actions (Jekyll 4.x, no third-party plugins needed, CI validation) deploying to GitHub Pages |
-| Search | Client-side JS facets plus keyword box over the embedded JSON-LD; `<noscript>` fallback lists all published resources grouped by lifecycle stage |
+| Search | Client-side JS facets (lifecycle stage, type, research area, expertise level, audience, access cost, obsolete toggle; configurable in `_config.yml`) plus keyword box over the embedded JSON-LD; `<noscript>` fallback lists all published resources grouped by lifecycle stage |
 | Authoring | GitHub Issue form with dropdowns generated from the vocabulary files; an Action turns the issue into a Markdown file and opens a PR |
-| Site | New repository and theme; base URL placeholder `https://<org>.github.io/<repo>/` until the repo exists |
+| Site | Repository `harborlighttech/geofair-ocean`, live at `https://harborlighttech.github.io/geofair-ocean/`; a minimal custom layout with no theme gem, colours set in one `theme_colors` block in `_config.yml` so each domain instance restyles without touching CSS |
+| Resource page | Two columns from the top: title, description, "Open the resource", learning outcomes, notes and testimonials on the left; the metadata panel on the right, level with the title; single column with the panel last below 820 px |
+| Badges and links | Every badge (type, level, cost, status, stage, area) shows its vocabulary definition as a hover tooltip; every link that leaves the site opens in a new tab with `rel="noopener"` |
 
 ## Decisions taken and items still open
 
-Eleven questions were asked and answered on 2026-11-06; the answers are folded into the Summary table above. The items below were not asked because they do not change the architecture, but each needs an answer before the matching implementation phase.
+Eleven questions were asked and answered on 2026-11-06; the answers are folded into the Summary table above. The items below were left open in the original plan; most have since been settled by the implementation.
 
-| Open item | Default assumed in this plan | Needed by |
-| --- | --- | --- |
-| Repository name and GitHub organisation (sets `url` and `baseurl` in `_config.yml`, and every `@id`) | `https://<org>.github.io/<repo>/` | Phase 1 |
-| Vocabulary choice per facet (adopt, map, or create) after reviewing the candidates section | Recommendations in the vocabulary section | Phase 1 |
-| Does GeoFAIR mean geoscience specifically? Decides whether research area uses an Earth-science scheme (NASA GCMD, USGS) or a general one (OECD FOS) | Geoscience | Phase 1 |
-| Default license for resources whose license is unknown | Field left empty and flagged by CI, not defaulted | Phase 2 |
-| Who may approve PRs from the Issue form (CODEOWNERS) | Repository owner | Phase 4 |
-| Target audience and expertise-level term lists | Audience: researcher, data steward/manager, student, educator, repository or infrastructure staff, policy maker. Level: beginner, intermediate, advanced | Phase 1 |
-| Should testimonials show the provider's affiliation and a link, or name only? | Name, optional affiliation, optional URL; all shown if present | Phase 2 |
-| Keyword field: free text or constrained? | Free text, lower-cased, plus the vocabulary terms copied in automatically for discovery | Phase 2 |
-| Analytics or search logging on the search page | None (static site, no third-party scripts) | Phase 3 |
-| Theme | A lightweight accessible theme (e.g. a minimal custom layout with no theme gem, or `just-the-docs` if a docs-style sidebar is wanted) | Phase 1 |
+| Item | Resolution |
+| --- | --- |
+| Repository name and GitHub organisation | `harborlighttech/geofair-ocean`; `url: https://harborlighttech.github.io`, `baseurl: /geofair-ocean` |
+| Vocabulary choice per facet | The recommendations in the vocabulary section were adopted as drafted: RDMkit stages + Describe; a ten-term local resource-type list mapped to LRMI and DataCite; four status terms mapped to PSO. **Still open:** fill the `same_as` GCMD concept URIs in `research_area.yml` |
+| GeoFAIR scope | The first instance is the Ocean domain, so research area uses the second level of NASA GCMD *Oceans* (20 terms incl. one cross-cutting RDM term). Other domains swap that one file |
+| Default license when unknown | `LicenseRef-Unknown` exists in `_data/licenses.yml` for the Issue-form path; maintainers resolve it at review. **Still open:** whether CI should warn on it |
+| CODEOWNERS | `@harborlighttech` |
+| Audience and expertise-level lists | As proposed; published as vocabularies |
+| Testimonial display | Name, optional affiliation, optional URL; all shown if present |
+| Keywords | Free text; vocabulary labels appended in the JSON-LD `keywords` |
+| Analytics | None |
+| Theme | Minimal custom layout, no theme gem; `theme_colors` in `_config.yml` |
+| **Still open:** `organization_url` in `_config.yml` | Placeholder `https://example.org/geofair` until GeoFAIR has a home page |
+| **Still open:** sample content | The six `sample-*.md` resources use `example.org` links and must be replaced before launch |
 
 ## Resource schema for Jekyll
 
-Each resource is one Markdown file in a `_resources` collection; its YAML front matter is the record, and the four vocabularies live as YAML files under `_data/vocab/` so that layouts, the Issue form and CI validation all read the same term lists. Field names are snake\_case; vocabulary fields hold term *ids* (slugs), never labels, so labels can be edited without touching resources.
+Each resource is one Markdown file in a `_resources` collection; its YAML front matter is the record, and the seven vocabularies live as YAML files under `_data/vocab/` so that layouts, the Issue form and CI validation all read the same term lists. Field names are snake\_case; vocabulary fields hold term *ids* (slugs), never labels, so labels can be edited without touching resources.
 
 | Field | Type | Required | RDA element | Notes |
 | --- | --- | --- | --- | --- |
 | `title` | string ≤ 1000 chars | Yes | Title | Transcribed from the resource |
 | `description` | string ≤ 2000 chars | Yes | Abstract / Description | Your "descriptive context" field. Longer narrative goes in the Markdown body, which renders on the page but is not emitted as metadata |
-| `url` | URL | Yes | URL to Resource | Landing page or persistent identifier of the external material |
+| `resource_url` | URL | Yes | URL to Resource | Landing page or persistent identifier of the external material. Named `resource_url` because Jekyll reserves `url` on every document for its own page path |
 | `url_type` | enum: `URL`, `DOI`, `Handle`, `ARK`, `PURL`, `URN` | No (auto-detected) | Resource URL Type | Subset of DataCite `relatedIdentifierType`; CI infers `DOI` from `doi.org`, `Handle` from `hdl.handle.net` |
 | `resource_type` | one term id from `resource_type` vocab | Yes | Learning Resource Type | Single-valued |
 | `license` | object `{id, name, url}` | Yes | License | `id` is an SPDX identifier (e.g. `CC-BY-4.0`); `name` and `url` filled from `_data/licenses.yml` when omitted |
@@ -57,24 +63,24 @@ Each resource is one Markdown file in a `_resources` collection; its YAML front 
 | `keywords` | list of strings | No | Keyword(s) | Free text; vocabulary labels are appended automatically in the JSON-LD |
 | `audience` | list of term ids from `audience` vocab | No | Target Group (Audience) | Small local list (see vocabularies) |
 | `learning_outcomes` | list of strings | No | Learning Outcome | One sentence each |
-| `access_cost` | enum `no`, `yes`, `maybe` | No, default `no` | Access Cost | `maybe` must be explained in `description` |
+| `access_cost` | one term id from `access_cost` vocab: `"no"`, `"yes"`, `"maybe"` | No, default `"no"` | Access Cost | Ids are the RDA values; labels (Free, Paid, May have a cost) come from the vocabulary. Quote the value: an unquoted `no` is a YAML boolean |
 | `expertise_level` | enum `beginner`, `intermediate`, `advanced` | No | Expertise Level | Bioschemas/TeSS convention |
 | `lifecycle_stages` | list of term ids, ≥ 1 | Yes | — (GeoFAIR facet) | Multi-valued |
 | `research_areas` | list of term ids, ≥ 1 | Yes | — (GeoFAIR facet) | Multi-valued |
 | `status` | one term id: `draft`, `in-review`, `published`, `obsolete` | Yes | — (GeoFAIR facet) | Issue form sets `in-review`; maintainer sets `published` at merge |
 | `superseded_by` | URL or resource slug | No | — | Only meaningful when `status: obsolete` |
 | `testimonials` | list of `{provider: {name, type, affiliation, url}, text, date}` | No | — | `type` is `Person` or `Organization` |
-| `identifier` | URL | No | — | Explicit DOI/handle when `url` is a plain landing page |
+| `identifier` | URL | No | — | Explicit DOI/handle when `resource_url` is a plain landing page |
 | `image` | path or URL | No | — | Optional thumbnail for cards |
 | `date_added` | ISO 8601 date | No | — | Catalogue bookkeeping; set by the Issue-form Action |
 
-A complete example, `_resources/usgs-metadata-wizard-tutorial.md`:
+A complete example (the repository ships six Ocean samples in the same shape), `_resources/usgs-metadata-wizard-tutorial.md`:
 
 ```yaml
 ---
 title: "Writing FGDC/ISO metadata with the USGS Metadata Wizard"
 description: "A 45-minute hands-on tutorial that walks through describing a geospatial dataset with the Metadata Wizard, validating the record, and exporting it for a repository submission."
-url: https://example.org/metadata-wizard-tutorial
+resource_url: https://example.org/metadata-wizard-tutorial
 url_type: URL
 identifier: https://doi.org/10.5066/EXAMPLE
 resource_type: tutorial
@@ -94,7 +100,7 @@ audience: [researcher, data-steward]
 learning_outcomes:
   - "Create a standards-compliant metadata record for a geospatial dataset"
   - "Validate and export the record for repository deposit"
-access_cost: no
+access_cost: "no"
 expertise_level: beginner
 lifecycle_stages: [process, preserve, share]
 research_areas: [solid-earth, land-surface]
@@ -117,6 +123,8 @@ Each vocabulary file has the same shape, so one include renders any of them and 
 id: lifecycle-stage
 name: GeoFAIR Lifecycle Stage
 description: Stage of the research data lifecycle a resource supports.
+field: lifecycle_stages      # front-matter field the terms are used in
+cardinality: many            # one | many
 terms:
   - id: plan
     label: Plan
@@ -126,11 +134,11 @@ terms:
       - https://www.usgs.gov/data-management/plan
 ```
 
-The `terms[].id` values are what resources reference; `label` and `definition` feed the page and the JSON-LD `DefinedTerm`; `same_as` (and optionally `broad_match`) carry the crosswalk to external vocabularies. Jekyll settings: `collections: resources: {output: true, permalink: /resources/:name/}` and `defaults` giving every resource `layout: resource` and `status: draft`, so a file that forgets `status` can never be published by accident.
+The `terms[].id` values are what resources reference; `label` and `definition` feed the page, the badge tooltips and the JSON-LD `DefinedTerm` (`name`, `description`); `same_as` (and optionally `broad_match`, `close_match`) carry the crosswalk to external vocabularies. The `field` and `cardinality` keys let the validator and the Issue-form generator discover a vocabulary without being told about it, which is how the access-cost vocabulary was added without touching either script. Jekyll settings: `collections: resources: {output: true, permalink: /resources/:name/}` and `defaults` giving every resource `layout: resource` and `status: draft`, so a file that forgets `status` can never be published by accident.
 
 ## Controlled vocabularies: candidates and recommendation
 
-For each facet the table lists the existing vocabularies worth considering, then the recommended approach. The pattern recommended in all four cases is the same: publish a short GeoFAIR term list as a `schema:DefinedTermSet` at a stable URL on the site, and link every term to its external equivalents with `sameAs`/`broadMatch`. That keeps the facet lists short enough to use, while staying interoperable with DataCite, LRMI and the Earth-science vocabularies. Where an external list is already the right size and has term URIs (LRMI, GCMD top level), adopting it directly is the simpler alternative and is noted.
+For each facet the table lists the existing vocabularies that were considered, then the approach taken. The pattern is the same in every case: publish a short GeoFAIR term list as a `schema:DefinedTermSet` at a stable URL on the site, and link every term to its external equivalents with `sameAs`/`broadMatch`. That keeps the facet lists short enough to use, while staying interoperable with DataCite, LRMI and the Earth-science vocabularies. Where an external list is already the right size and has term URIs (LRMI, GCMD top level), adopting it directly is the simpler alternative and is noted.
 
 ### Lifecycle stage
 
@@ -164,7 +172,9 @@ Recommendation: a GeoFAIR set of about ten training-oriented types — tutorial,
 | ANZSRC FoR 2020, division 37 Earth Sciences | \~10 groups (geology, geophysics, hydrology, oceanography, atmospheric sciences, climate change science, physical geography, geochemistry, geoinformatics) | Codes, published as linked data by ARDC | Clean mid-size list; Australia-centric governance |
 | UNESCO nomenclature, field 25 Earth and Space Sciences | \~20 disciplines | Codes only | Dated (1988) but stable |
 
-Recommendation: adopt the GCMD Earth Science top-level categories (about 14 terms) as the GeoFAIR research-area facet, storing each term's GCMD UUID URI in `same_as` and its nearest FOS 1.5 subclass in `broad_match` so the JSON-LD can also emit a DataCite-compatible FOS subject. Add one local term, **Cross-disciplinary / Research data management**, for resources that are not domain-specific. If GeoFAIR turns out to be broader than geoscience, use FOS level-2 classes (the 42 fields) instead; the file format does not change.
+Recommendation for a general geoscience hub: adopt the GCMD Earth Science top-level categories (about 14 terms) as the research-area facet, storing each term's GCMD UUID URI in `same_as` and its nearest FOS 1.5 subclass in `broad_match` so the JSON-LD can also emit a DataCite-compatible FOS subject. Add one local term, **Cross-disciplinary / Research data management**, for resources that are not domain-specific. If GeoFAIR turns out to be broader than geoscience, use FOS level-2 classes (the 42 fields) instead; the file format does not change.
+
+Implemented for the Ocean instance: the second level of GCMD *Oceans* (bathymetry and seafloor topography, coastal processes, marine geophysics, marine sediments, ocean acoustics, ocean chemistry, ocean circulation, ocean heat budget, ocean optics, ocean temperature, ocean waves, ocean winds, salinity and density, sea ice, sea surface topography, tides, water quality), plus *marine ecosystems and biology*, *ocean observing systems* and the cross-cutting *research data management* term: 20 terms in `_data/vocab/research_area.yml`. The GCMD concept URIs for `same_as` are still to be filled in.
 
 ### Status
 
@@ -183,7 +193,7 @@ Recommendation: a GeoFAIR set of four terms — `draft`, `in-review`, `published
 | --- | --- |
 | Audience | Local list of six: researcher, data steward or data manager, student, educator or trainer, repository or infrastructure staff, policy maker or funder. RDA suggests the Europass target-group list, which is employment-oriented and does not fit; emitted as `schema:EducationalAudience` with `audienceType` |
 | Expertise level | beginner, intermediate, advanced (Bioschemas TrainingMaterial / TeSS convention); emitted as `educationalLevel` |
-| Access cost | `no`, `yes`, `maybe` per RDA; emitted as `isAccessibleForFree` (true/false) plus a textual note when `maybe` |
+| Access cost | RDA defines no vocabulary beyond the values `yes` / `no` / `maybe` (COAR access rights describes rights, not cost). Implemented as a seventh site vocabulary, `access_cost.yml`, whose ids are those three values and whose labels are **Free**, **Paid** and **May have a cost**; emitted as `conditionsOfAccess` (DefinedTerm) alongside the boolean `isAccessibleForFree` derived from it |
 | License | SPDX identifiers with a local `_data/licenses.yml` lookup for name and URL; emitted as `license` URL |
 
 ## Mapping to the RDA Minimal Metadata for Learning Resources
@@ -199,12 +209,12 @@ All 14 elements of the RDA recommendation ([Hoebelheinrich et al. 2022, DOI 10.1
 | 5 | Keyword(s) | TEXT(100), yes | Curated vocabulary recommended, none named | `keywords[]` plus vocabulary labels | No | Facet labels are appended at build time so keyword search also hits them |
 | 6 | License | TEXT(100), no | NERC L08; EU Licence Authority table; "URL + human-readable name" | `license.{id,name,url}` | Yes | SPDX id resolves to both name and URL, satisfying the two-part recommendation |
 | 7 | Version Date | DATE, no | ISO 8601 / RFC 3339 | `version_date` | Yes | YYYY-MM-DD |
-| 8 | URL to Resource | TEXT(1000), no | URL syntax; PID preferred | `url` (+ `identifier`) | Yes |  |
+| 8 | URL to Resource | TEXT(1000), no | URL syntax; PID preferred | `resource_url` (+ `identifier`) | Yes | Field name differs from the RDA label because Jekyll reserves `url` |
 | 9 | Resource URL Type | TEXT(40), no | DataCite `relatedIdentifierType` | `url_type` | No, auto-detected | Subset: URL, DOI, Handle, ARK, PURL, URN |
 | 10 | Target Group (Audience) | TEXT(40), yes | Europass target groups | `audience[]` | No | Local six-term list; see vocabularies |
 | 11 | Learning Resource Type | TEXT(40), no | LRMI concept scheme; CEDS | `resource_type` | Yes | GeoFAIR list with `broadMatch` to LRMI |
 | 12 | Learning Outcome(s) | TEXT(1000), yes | — | `learning_outcomes[]` | No |  |
-| 13 | Access Cost | TEXT(8), no | yes / no / maybe; COAR access rights as a finer option | `access_cost` | No, default `no` |  |
+| 13 | Access Cost | TEXT(8), no | yes / no / maybe; COAR access rights as a finer option | `access_cost` | No, default `"no"` | The three RDA values are the term ids of the site's access-cost vocabulary |
 | 14 | Expertise (Skill) Level | TEXT(40), no | None named; examples beginner, intermediate, advanced | `expertise_level` | No |  |
 
 GeoFAIR fields with no RDA counterpart are extensions, not conflicts: `lifecycle_stages`, `research_areas`, `status`, `superseded_by`, `testimonials`, `image`, `date_added`. In an RDA-style flat export they would be dropped or, for the two subject-like facets, folded into Keyword(s) — which is exactly what the build does for the JSON-LD `keywords` property.
@@ -217,12 +227,12 @@ Every resource page emits one `schema:LearningResource` object (the type Biosche
 
 | GeoFAIR field | Schema.org property | Value shape |
 | --- | --- | --- |
-| page URL | `@id`, `mainEntityOfPage` | `https://<org>.github.io/<repo>/resources/<slug>/` |
+| page URL | `@id`, `mainEntityOfPage` | `https://harborlighttech.github.io/geofair-ocean/resources/<slug>/` |
 | `title` | `name` | Text |
 | `description` | `description` | Text |
-| `url` | `url` | URL of the external material |
-| `identifier` (or `url` when `url_type` is DOI/Handle/ARK) | `identifier`, `sameAs` | `PropertyValue {propertyID: "DOI", value}` and the resolvable URL |
-| `resource_type` | `learningResourceType` | `DefinedTerm {name, termCode, inDefinedTermSet, sameAs[]}`; `additionalType` carries the DataCite `close_match` string |
+| `resource_url` | `url` | URL of the external material |
+| `identifier` (or `resource_url` when `url_type` is DOI/Handle/ARK) | `identifier`, `sameAs` | The resolvable PID URL as a plain string in both properties (simpler than a `PropertyValue`, and what the validators accept) |
+| `resource_type` | `learningResourceType` | `DefinedTerm {name, termCode, description, inDefinedTermSet, broadMatch}`; `additionalType` carries the DataCite `close_match` string |
 | `license` | `license` | URL (SPDX canonical) |
 | `version_date` | `dateModified` | ISO date (Schema.org has no "version date"; `dateModified` is the closest and is what Google reads) |
 | `authors[]` | `author` | `Person {name, identifier: ORCID, affiliation}` or `Organization {name, identifier: ROR}` |
@@ -230,13 +240,14 @@ Every resource page emits one `schema:LearningResource` object (the type Biosche
 | `keywords[]` + facet labels | `keywords` | array of Text |
 | `audience[]` | `audience` | `EducationalAudience {audienceType}` |
 | `learning_outcomes[]` | `teaches` | array of Text |
-| `access_cost` | `isAccessibleForFree` | `true` when `no`; `false` when `yes`; `false` plus a sentence in `description` when `maybe` |
+| `access_cost` | `isAccessibleForFree` and `conditionsOfAccess` | Boolean `true` only when `no`; plus a `DefinedTerm` in the GeoFAIR access-cost set (Free / Paid / May have a cost) |
 | `expertise_level` | `educationalLevel` | `DefinedTerm` in the GeoFAIR expertise-level set |
 | `lifecycle_stages[]` | `about` | `DefinedTerm` in the GeoFAIR lifecycle-stage set |
 | `research_areas[]` | `about` | `DefinedTerm` in the GeoFAIR research-area set, `sameAs` GCMD URI |
 | `status` | `creativeWorkStatus` | `DefinedTerm` in the GeoFAIR status set |
 | `superseded_by` | `dct:isReplacedBy` | `@id` of the replacing resource (Schema.org has no equivalent property) |
 | `testimonials[]` | `review` | `Review {reviewBody, author: Person or Organization, datePublished}` — no `reviewRating`, since testimonials are unrated |
+| `date_added` | `sdDatePublished` | ISO date the catalogue record was created |
 | `image` | `image` | absolute URL |
 | catalogue membership | `isPartOf` | `Collection {@id: <site>/resources/, name: "GeoFAIR Resource Hub"}` |
 | profile | `dct:conformsTo` | `https://bioschemas.org/profiles/TrainingMaterial/1.0-RELEASE` |
@@ -245,24 +256,26 @@ The JSON-LD for the example resource:
 
 ```json
 {
-  "@context": {"@vocab": "https://schema.org/", "dct": "http://purl.org/dc/terms/"},
+  "@context": {"@vocab": "https://schema.org/", "dct": "http://purl.org/dc/terms/", "broadMatch": "http://www.w3.org/2004/02/skos/core#broadMatch"},
   "@type": "LearningResource",
-  "@id": "https://<org>.github.io/<repo>/resources/usgs-metadata-wizard-tutorial/",
-  "mainEntityOfPage": "https://<org>.github.io/<repo>/resources/usgs-metadata-wizard-tutorial/",
+  "@id": "https://harborlighttech.github.io/geofair-ocean/resources/usgs-metadata-wizard-tutorial/",
+  "mainEntityOfPage": "https://harborlighttech.github.io/geofair-ocean/resources/usgs-metadata-wizard-tutorial/",
   "dct:conformsTo": {"@id": "https://bioschemas.org/profiles/TrainingMaterial/1.0-RELEASE"},
   "name": "Writing FGDC/ISO metadata with the USGS Metadata Wizard",
   "description": "A 45-minute hands-on tutorial ...",
   "url": "https://example.org/metadata-wizard-tutorial",
-  "identifier": {"@type": "PropertyValue", "propertyID": "DOI", "value": "10.5066/EXAMPLE"},
+  "identifier": "https://doi.org/10.5066/EXAMPLE",
   "sameAs": "https://doi.org/10.5066/EXAMPLE",
   "learningResourceType": {
     "@type": "DefinedTerm", "name": "Tutorial", "termCode": "tutorial",
-    "inDefinedTermSet": "https://<org>.github.io/<repo>/vocab/resource-type/",
-    "sameAs": "http://purl.org/dcx/lrmi-vocabs/learningResourceType/activityPlan"
+    "description": "A step-by-step, hands-on lesson that a learner works through at their own pace.",
+    "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/resource-type/",
+    "broadMatch": "http://purl.org/dcx/lrmi-vocabs/learningResourceType/activityPlan"
   },
   "additionalType": "InteractiveResource",
   "license": "https://creativecommons.org/licenses/by/4.0/",
   "dateModified": "2025-03-14",
+  "sdDatePublished": "2025-06-10",
   "author": [
     {"@type": "Person", "name": "Jane Doe", "identifier": "https://orcid.org/0000-0000-0000-0000"},
     {"@type": "Organization", "name": "U.S. Geological Survey", "identifier": "https://ror.org/035a68863"}
@@ -275,30 +288,31 @@ The JSON-LD for the example resource:
   ],
   "teaches": ["Create a standards-compliant metadata record for a geospatial dataset", "Validate and export the record for repository deposit"],
   "isAccessibleForFree": true,
-  "educationalLevel": {"@type": "DefinedTerm", "name": "Beginner", "termCode": "beginner", "inDefinedTermSet": "https://<org>.github.io/<repo>/vocab/expertise-level/"},
+  "conditionsOfAccess": {"@type": "DefinedTerm", "name": "Free", "termCode": "no", "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/access-cost/", "description": "The resource can be used at no cost. Registration may still be required."},
+  "educationalLevel": {"@type": "DefinedTerm", "name": "Beginner", "termCode": "beginner", "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/expertise-level/"},
   "about": [
-    {"@type": "DefinedTerm", "name": "Process", "termCode": "process", "inDefinedTermSet": "https://<org>.github.io/<repo>/vocab/lifecycle-stage/", "sameAs": ["https://rdmkit.elixir-europe.org/processing", "https://www.usgs.gov/data-management/process"]},
-    {"@type": "DefinedTerm", "name": "Preserve", "termCode": "preserve", "inDefinedTermSet": "https://<org>.github.io/<repo>/vocab/lifecycle-stage/"},
-    {"@type": "DefinedTerm", "name": "Share", "termCode": "share", "inDefinedTermSet": "https://<org>.github.io/<repo>/vocab/lifecycle-stage/"},
-    {"@type": "DefinedTerm", "name": "Solid Earth", "termCode": "solid-earth", "inDefinedTermSet": "https://<org>.github.io/<repo>/vocab/research-area/", "sameAs": "https://gcmd.earthdata.nasa.gov/kms/concept/<uuid>"},
-    {"@type": "DefinedTerm", "name": "Land Surface", "termCode": "land-surface", "inDefinedTermSet": "https://<org>.github.io/<repo>/vocab/research-area/"}
+    {"@type": "DefinedTerm", "name": "Process", "termCode": "process", "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/lifecycle-stage/", "sameAs": ["https://rdmkit.elixir-europe.org/processing", "https://www.usgs.gov/data-management/process"]},
+    {"@type": "DefinedTerm", "name": "Preserve", "termCode": "preserve", "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/lifecycle-stage/"},
+    {"@type": "DefinedTerm", "name": "Share", "termCode": "share", "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/lifecycle-stage/"},
+    {"@type": "DefinedTerm", "name": "Solid Earth", "termCode": "solid-earth", "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/research-area/", "sameAs": "https://gcmd.earthdata.nasa.gov/kms/concept/<uuid>"},
+    {"@type": "DefinedTerm", "name": "Land Surface", "termCode": "land-surface", "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/research-area/"}
   ],
-  "creativeWorkStatus": {"@type": "DefinedTerm", "name": "Published", "termCode": "published", "inDefinedTermSet": "https://<org>.github.io/<repo>/vocab/status/"},
+  "creativeWorkStatus": {"@type": "DefinedTerm", "name": "Published", "termCode": "published", "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/status/"},
   "review": [{
     "@type": "Review",
     "reviewBody": "Took our group from no metadata to a validated record in one afternoon.",
     "author": {"@type": "Person", "name": "A. Researcher", "affiliation": {"@type": "Organization", "name": "Example University"}},
     "datePublished": "2025-06-02"
   }],
-  "isPartOf": {"@type": "Collection", "@id": "https://<org>.github.io/<repo>/resources/", "name": "GeoFAIR Resource Hub"}
+  "isPartOf": {"@type": "Collection", "@id": "https://harborlighttech.github.io/geofair-ocean/resources/", "name": "GeoFAIR Resource Hub"}
 }
 ```
 
-How it is generated. A single Liquid include, `_includes/jsonld/resource.html`, takes a resource object and writes the JSON above; every string passes through `| jsonify` so quotes and newlines are escaped, arrays are emitted with `{% unless forloop.last %},{% endunless %}`, and vocabulary ids are resolved to label, definition and `same_as` with `site.data.vocab[set].terms | where: "id", term_id | first`. The resource layout wraps the include in `<script type="application/ld+json">`. The same include is called in a loop by the search page (next section), so there is exactly one template for the structured data and the two outputs cannot drift apart.
+How it is generated. A single Liquid include, `_includes/jsonld/resource.html`, takes a resource object and writes the JSON above; every string passes through `| jsonify` so quotes and newlines are escaped, arrays are emitted with `{% unless forloop.last %},{% endunless %}`, and vocabulary ids are resolved to label, definition and `same_as` with `site.data.vocab[set].terms | where: "id", term_id | first`. The resource layout wraps the include in `<script type="application/ld+json">`. The same include is called in a loop by the search page (next section) and by `resources.jsonld`, so there is exactly one template for the structured data and the three outputs cannot drift apart. One house rule learned while building it: Jekyll includes share the caller's variable scope, so an `assign` inside the include overwrites a same-named variable in the layout — include-local variables carry distinct names (e.g. `cost_code`).
 
-The four `DefinedTermSet` pages at `/vocab/<set>/` are generated from the same `_data/vocab/*.yml` files: each is a human-readable term list plus its own JSON-LD (`DefinedTermSet` with `hasDefinedTerm[]`, each term carrying `sameAs`), so the `inDefinedTermSet` URLs in every resource resolve to something a machine can read. A Liquid-only build can produce these as four small pages written by hand that loop over the data file, or, if a page per set is to be generated automatically, with the `jekyll-datapage-generator` plugin, which the GitHub Actions build permits.
+The seven `DefinedTermSet` pages at `/vocab/<set>/` are rendered from the same `_data/vocab/*.yml` files by one `vocab` layout: each is a human-readable term table plus its own JSON-LD (`DefinedTermSet` with `hasDefinedTerm[]`, each term carrying its definition and mappings), so the `inDefinedTermSet` URLs in every resource resolve to something a machine can read. Each page is a six-line front-matter file under `vocab/`; no generator plugin is needed.
 
-Validation of the structured data in CI: parse every built page's JSON-LD with the `jsonld` npm package (catches malformed JSON and bad `@context`), then check each object against the Bioschemas TrainingMaterial SHACL shapes with `pyshacl`, and against a small GeoFAIR SHACL shape that asserts the `DefinedTermSet` URLs are the site's own. The Google Rich Results test and the Schema.org validator remain manual spot checks.
+Validation of the structured data in CI: `scripts/validate_jsonld.py` parses every JSON-LD block in the built site and `resources.jsonld`, checks each `LearningResource` for the required properties and an `@id` on this site, checks every `DefinedTerm` resolves to a site vocabulary with a name, and checks that the embedded `ItemList` equals `resources.jsonld` and contains no draft or in-review entries. With `--shacl` it also runs `pyshacl` against `schema/geofair-shapes.ttl` (or the Bioschemas TrainingMaterial shapes, passed with `--shapes`). The Google Rich Results test and the Schema.org validator remain manual spot checks.
 
 ## Faceted search page
 
@@ -312,16 +326,16 @@ The search page at `/resources/` embeds one `<script type="application/ld+json" 
 | Status | `creativeWorkStatus.termCode` | Single toggle: "include obsolete" | published only |
 | Expertise level | `educationalLevel.termCode` | Multi-select | none |
 | Audience | `audience[].audienceType` | Multi-select | none |
-| Free of charge | `isAccessibleForFree` | Checkbox | off |
+| Access cost | `conditionsOfAccess.termCode` (Free / Paid / May have a cost) | Multi-select | none |
 | Keyword search | `name`, `description`, `keywords[]`, `teaches[]`, `author[].name` | Case-folded token match, all tokens must hit | empty |
 
-Facets combine with AND across facets and OR within a facet, which is the behaviour visitors expect from library catalogues. Each facet shows a live count of matching resources for every term, computed from the currently filtered set with that facet's own selection ignored, so a term never shows a zero count that the visitor could not reach. Term labels and definitions come from the `DefinedTerm` objects themselves, so the vocabulary files remain the single source. Expertise level, audience and free-of-charge are included because they are present in every record and cost nothing; they can be dropped from the UI with one line if the panel is too busy.
+Facets combine with AND across facets and OR within a facet, which is the behaviour visitors expect from library catalogues. Each facet shows a live count of matching resources for every term, computed from the currently filtered set with that facet's own selection ignored, so a term never shows a zero count that the visitor could not reach. Term labels and definitions come from the `DefinedTerm` objects themselves, so the vocabulary files remain the single source; the definitions also become hover tooltips on every chip. Which facets appear, and in what order, is the `catalogue.facets` list in `_config.yml`; the panel itself is rendered at build time from the vocabulary files so terms keep vocabulary order.
 
 Behaviour and state:
 
 1. On load the script reads the ItemList, builds an in-memory array with lower-cased search text per item, and renders the facet panel from the terms present (ordered as in the vocabulary file, not alphabetically, so lifecycle stages appear in lifecycle order).
 2. Every selection is written to the URL query string (`?stage=plan,collect&type=tutorial&q=metadata`), so a filtered view can be bookmarked or shared, and the page restores it on load.
-3. Results render as cards: title linking to the resource page, type and level chips, a two-line description, lifecycle and research-area chips, and an external-link icon to the material. Obsolete items, when shown, carry an "Obsolete" badge.
+3. Results render as cards: title linking to the resource page, type, level and cost chips, a two-line description, lifecycle and research-area chips, and an "Open resource" link that opens the material in a new tab. Obsolete items, when shown, carry an "Obsolete" badge. Every chip's tooltip is the term's definition from the JSON-LD.
 4. Keyword matching is a plain token match. If the catalogue grows past a few hundred items or fuzzy matching is wanted, swap the matcher for MiniSearch (about 7 kB, no dependencies) without changing the data source; ItemsJS is the alternative if facet counting should also be delegated to a library.
 5. The page emits `aria-live` updates for the result count, every control is a real `<input>` with a `<label>`, and the panel is keyboard-operable; no framework is used.
 
@@ -338,8 +352,8 @@ The repository is a plain Jekyll 4 site with no theme gem and no third-party Jek
 ├── _config.yml                 # collections, defaults, url/baseurl, vocab paths
 ├── _resources/                 # one Markdown file per resource
 ├── _data/
-│   ├── vocab/                  # lifecycle_stage.yml, resource_type.yml, research_area.yml,
-│   │                           # status.yml, audience.yml, expertise_level.yml
+│   ├── vocab/                  # lifecycle_stage, resource_type, research_area, status,
+│   │                           # audience, expertise_level, access_cost (.yml)
 │   └── licenses.yml            # SPDX id -> name, url
 ├── _layouts/
 │   ├── default.html
@@ -347,25 +361,31 @@ The repository is a plain Jekyll 4 site with no theme gem and no third-party Jek
 │   └── vocab.html              # DefinedTermSet page + JSON-LD
 ├── _includes/
 │   ├── jsonld/resource.html    # the single JSON-LD template
-│   ├── resource-card.html      # card used by search results and noscript list
-│   └── facet-panel.html
+│   ├── jsonld/term.html        # one DefinedTerm
+│   ├── resource-card.html      # card used by the home page and the noscript list
+│   ├── facet-panel.html        # facet checkboxes rendered from the vocabularies
+│   └── header.html, footer.html
 ├── resources/index.html        # faceted search page (ItemList JSON-LD + noscript list)
 ├── resources.jsonld            # same ItemList as a standalone file
-├── vocab/                      # one page per vocabulary, or generated
+├── vocab/                      # one six-line page per vocabulary (layout: vocab)
+├── assets/css/site.css         # styles; colours only via the --c-* variables from _config.yml
 ├── assets/js/facets.js         # client-side faceting, no dependencies
 ├── schema/
 │   ├── resource.schema.json    # JSON Schema for front matter
 │   └── geofair-shapes.ttl      # SHACL shape for the emitted JSON-LD
 ├── scripts/
-│   ├── validate_resources.py   # front matter vs schema + vocab ids + URL reachability
-│   ├── validate_jsonld.py      # parse built pages, pyshacl against shapes
+│   ├── common.py               # shared helpers
+│   ├── validate_resources.py   # front matter vs schema + vocab ids + licences (+ URL check)
+│   ├── validate_jsonld.py      # parse built pages, structural checks, optional pyshacl
 │   ├── issue_to_resource.py    # Issue form body -> Markdown file
-│   └── build_issue_form.py     # vocab yml -> .github/ISSUE_TEMPLATE/new-resource.yml
+│   └── build_issue_form.py     # vocab yml -> .github/ISSUE_TEMPLATE/*.yml
 ├── .github/
-│   ├── ISSUE_TEMPLATE/new-resource.yml
+│   ├── ISSUE_TEMPLATE/         # new-resource.yml, update-resource.yml (generated)
+│   ├── CODEOWNERS, pull_request_template.md
 │   ├── workflows/pages.yml     # validate -> build -> deploy on push to main
 │   └── workflows/issue-to-pr.yml
-└── CONTRIBUTING.md, README.md, LICENSE
+├── docs/                       # planning documents (this file); excluded from the build
+└── GETTING-STARTED.md, CONTRIBUTING.md, README.md, LICENSE, Gemfile, requirements.txt
 ```
 
 GitHub Pages constraints that shape the design: the site is static, so faceting is client-side; the Pages default builder would pin Jekyll 3.10 and a plugin whitelist, so the Actions route is used (`actions/jekyll-build-pages` or a plain `bundle exec jekyll build` plus `actions/upload-pages-artifact` and `actions/deploy-pages`); project sites live under `/<repo>/`, so every absolute URL in the JSON-LD is built from `site.url | append: site.baseurl`; and there is no server-side redirect, so an obsolete resource keeps its page and points forward with `superseded_by` rather than redirecting.
@@ -381,19 +401,21 @@ Validation steps run on every PR and again before deploy:
 | Check | Tool | Fails the build when |
 | --- | --- | --- |
 | Front matter against `schema/resource.schema.json` | `jsonschema` (Python) via `validate_resources.py` | Missing required field, wrong type, description over 2000 characters, bad date |
-| Vocabulary ids exist | same script, reads `_data/vocab/*.yml` | Any `lifecycle_stages`, `research_areas`, `resource_type`, `status`, `audience` value not in its file |
+| Vocabulary ids exist | same script, reads `_data/vocab/*.yml` and each file's `field` key | Any `lifecycle_stages`, `research_areas`, `resource_type`, `status`, `audience`, `expertise_level` or `access_cost` value not in its file |
 | Slug and filename | same script | Filename not kebab-case, duplicate titles |
-| External `url` resolves | `requests` HEAD with retry, allow-list for known bot-blocking hosts | 4xx/5xx after retries (warning only on PRs from forks, error on main) |
+| External `resource_url` resolves | `requests` HEAD (GET fallback on 403/405), run on `main` only | Never fails the build; prints a warning per unreachable URL |
 | License id known | `_data/licenses.yml` lookup | Unknown SPDX id |
-| Built JSON-LD parses and conforms | `jsonld` (npm) + `pyshacl` with Bioschemas TrainingMaterial shapes and `geofair-shapes.ttl` | Any resource page or the ItemList fails |
+| Built JSON-LD parses and conforms | `validate_jsonld.py` (Python; optional `pyshacl` with `geofair-shapes.ttl` or the Bioschemas shapes) | Any block fails to parse, a `LearningResource` lacks a required property, a `DefinedTerm` points off-site, or the index contains a non-indexed status |
 | Issue form in sync with vocabularies | `build_issue_form.py --check` | Dropdown options differ from the vocab files |
 | Jekyll build | `jekyll build --strict_front_matter` | Liquid error or malformed front matter |
 
-Contributor workflow in detail. The Issue form (`new-resource.yml`) has text inputs for title, URL, description, authors, learning outcomes, keywords and testimonials, and dropdowns for resource type, license, language, expertise level, access cost, plus multi-select checkboxes for lifecycle stages, research areas and audience. The dropdown and checkbox options are generated from the vocabulary files by `build_issue_form.py`, so a new term is added in one place and CI refuses a stale form. On submission, `issue-to-pr.yml` parses the issue body (the Issue-form body is deterministic Markdown, so a small parser or the `github-issue-parser` action suffices), writes `_resources/<slug>.md` with `status: in-review` and `date_added` set to today, opens a PR that references the issue, and comments on the issue with the PR link. CODEOWNERS assigns the repository owner as reviewer; merging closes the issue. Editing an existing resource follows the same path through an "Update a resource" Issue form that asks for the slug, or by direct PR.
+Contributor workflow in detail. The Issue form (`new-resource.yml`) has text inputs for title, URL, description, authors, learning outcomes, keywords and testimonials, and dropdowns for resource type, license, language, expertise level and access cost, plus multi-select checkboxes for lifecycle stages, research areas and audience. Options are rendered as `Label [id]` so contributors read labels while the converter parses ids. The dropdown and checkbox options are generated from the vocabulary files by `build_issue_form.py`, so a new term is added in one place and CI refuses a stale form. On submission, `issue-to-pr.yml` parses the issue body (the Issue-form body is deterministic Markdown, so a small parser or the `github-issue-parser` action suffices), writes `_resources/<slug>.md` with `status: in-review` and `date_added` set to today, opens a PR that references the issue, and comments on the issue with the PR link. CODEOWNERS assigns `@harborlighttech` as reviewer; merging closes the issue. The repository must have *Settings → Actions → Workflow permissions* set to read-and-write with PR creation allowed, and *Settings → Pages → Source* set to GitHub Actions; `GETTING-STARTED.md` walks a new domain owner through both. Editing an existing resource follows the same path through an "Update a resource" Issue form that asks for the slug, or by direct PR.
 
 ## Phased implementation plan
 
-Six phases, each ending at a gate that can be checked objectively; a working, deployed site exists from the end of Phase 1, and every later phase adds to it without reworking the schema. Effort figures are estimates for one developer and exclude content writing.
+Six phases, each ending at a gate that can be checked objectively; a working, deployed site exists from the end of Phase 1, and every later phase adds to it without reworking the schema. Effort figures were estimates for one developer and exclude content writing.
+
+**Status, 14 Nov 2026:** Phases 0–4 are complete and their gates met (site live, CI validating resources, forms and JSON-LD on every pull request, a sample Issue-form submission converted end to end). Phase 5 remains: replace the six sample resources, fill `organization_url` and the GCMD `same_as` URIs, and add `CITATION.cff`.
 
 &#91;embedded content: implementation roadmap · 6 phases, 6 gates\]
 
@@ -409,6 +431,24 @@ Phases run left to right then wrap; the diamond at each phase's edge is its gate
 | 5 – Content and launch | Initial resource set entered and reviewed, theme and typography polish, README, a `CITATION.cff` for the hub, announcement text | Agreed initial set published; no CI warnings; vocabulary pages and search page linked from the home page | Depends on the number of resources; 1–2 days of engineering |
 
 Sequencing notes. Phase 2 can start in parallel with Phase 1 once the schema table in this document is accepted, because the JSON Schema is derived from that table alone. Phase 3 depends on Phase 1's JSON-LD include being stable, since the search page reuses it unchanged. Phase 4 depends on Phase 2, because the Issue-form parser and the validator share the same field definitions. Nothing in Phases 3–5 changes a resource file, so content entry can begin as soon as Phase 2 is complete.
+
+## Changes since the original plan
+
+| Date | Change | Why |
+| --- | --- | --- |
+| 2026-11-06 | Front-matter field for the external link is `resource_url`, not `url` | Jekyll reserves `url` on every document for its own page path; a front-matter `url` is silently shadowed |
+| 2026-11-06 | `identifier` emitted as a plain URL string rather than a `PropertyValue` | Simpler, and what the validators and Google accept |
+| 2026-11-06 | `date_added` emitted as `sdDatePublished` | Gives harvesters the catalogue-record date without misusing `datePublished` |
+| 2026-11-06 | Vocabulary files carry `field` and `cardinality` | Lets the validator and the Issue-form generator discover vocabularies automatically |
+| 2026-11-06 | Colours configurable in `_config.yml` (`theme_colors` → CSS variables) | Each domain instance restyles the template without editing CSS |
+| 2026-11-06 | Facet list configurable (`catalogue.facets`) | Domains can drop or reorder facets |
+| 2026-11-13 | Repository created as `harborlighttech/geofair-ocean`; first deploy | Ocean is the first domain instance |
+| 2026-11-14 | Resource page is two columns from the top, metadata panel beside the title | Owner request; the panel had started below the full-width title block |
+| 2026-11-14 | Access cost is a site vocabulary (`access_cost.yml`, labels Free / Paid / May have a cost) emitted as `conditionsOfAccess` + `isAccessibleForFree`; the ad-hoc "free only" checkbox became a generated facet | Labels needed a single home; RDA offers no vocabulary beyond the three values |
+| 2026-11-14 | All links that leave the site open in a new tab (`target="_blank" rel="noopener"`) | Owner request |
+| 2026-11-14 | Every badge has a hover tooltip with the term's definition | Owner request; definitions already existed in the vocabularies |
+| 2026-11-14 | `GETTING-STARTED.md` added; planning documents moved to `docs/` and excluded from the build | Two uploads lost hidden files and one overwrote config; the guide documents the setup steps. Markdown without front matter would otherwise be published as raw text |
+| 2026-11-14 | House rule: variables assigned inside a Liquid include must not reuse names from the calling layout | An include's `cost` overwrote the layout's `cost`, blanking a badge |
 
 ## Sources
 
