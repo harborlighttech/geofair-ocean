@@ -20,7 +20,7 @@ layout: default
     {%- if r.superseded_by %}
     {%- assign sup = r.superseded_by -%}
     {%- unless sup contains "://" %}{% assign sup = "/resources/" | append: sup | append: "/" | relative_url %}{% endunless %}
-    See the <a href="{{ sup }}">replacement</a>.
+    See the <a href="{{ sup }}"{% if r.superseded_by contains "://" %} target="_blank" rel="noopener"{% endif %}>replacement</a>.
     {%- endif %}
   </div>
   {%- elsif r.status != "published" %}
@@ -38,8 +38,8 @@ layout: default
       <p class="resource__description">{{ r.description }}</p>
 
       <p class="resource__cta">
-        <a class="button" href="{{ r.resource_url }}" rel="noopener">Open the resource <span aria-hidden="true">↗</span></a>
-        {%- if r.identifier %} <a class="resource__pid" href="{{ r.identifier }}">{{ r.identifier }}</a>{% endif %}
+        <a class="button" href="{{ r.resource_url }}" target="_blank" rel="noopener">Open the resource <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+        {%- if r.identifier %} <a class="resource__pid" href="{{ r.identifier }}" target="_blank" rel="noopener">{{ r.identifier }}</a>{% endif %}
       </p>
       {%- if r.learning_outcomes and r.learning_outcomes.size > 0 %}
       <h2>What you will learn</h2>
@@ -63,7 +63,7 @@ layout: default
         <li class="testimonial">
           <blockquote class="testimonial__text">{{ tm.text }}</blockquote>
           <p class="testimonial__provider">
-            {%- if tm.provider.url %}<a href="{{ tm.provider.url }}">{{ tm.provider.name }}</a>{% else %}{{ tm.provider.name }}{% endif -%}
+            {%- if tm.provider.url %}<a href="{{ tm.provider.url }}" target="_blank" rel="noopener">{{ tm.provider.name }}</a>{% else %}{{ tm.provider.name }}{% endif -%}
             {%- if tm.provider.affiliation %}, {{ tm.provider.affiliation }}{% endif -%}
             {%- if tm.date %} <time datetime="{{ tm.date | date: '%Y-%m-%d' }}">({{ tm.date | date: "%B %Y" }})</time>{% endif -%}
           </p>
@@ -85,10 +85,10 @@ layout: default
         {%- endif %}
         {%- if r.authors and r.authors.size > 0 %}
         <dt>Authors</dt>
-        <dd>{% for a in r.authors %}{% if a.orcid %}<a href="{{ a.orcid }}">{{ a.name }}</a>{% elsif a.ror %}<a href="{{ a.ror }}">{{ a.name }}</a>{% else %}{{ a.name }}{% endif %}{% if a.affiliation %} ({{ a.affiliation }}){% endif %}{% unless forloop.last %}; {% endunless %}{% endfor %}</dd>
+        <dd>{% for a in r.authors %}{% if a.orcid %}<a href="{{ a.orcid }}" target="_blank" rel="noopener">{{ a.name }}</a>{% elsif a.ror %}<a href="{{ a.ror }}" target="_blank" rel="noopener">{{ a.name }}</a>{% else %}{{ a.name }}{% endif %}{% if a.affiliation %} ({{ a.affiliation }}){% endif %}{% unless forloop.last %}; {% endunless %}{% endfor %}</dd>
         {%- endif %}
         <dt>Licence</dt>
-        <dd>{% if lic and lic.url != "" %}<a href="{{ lic.url }}">{{ lic.name }}</a>{% elsif lic %}{{ lic.name }}{% else %}{{ r.license.name | default: r.license.id }}{% endif %}</dd>
+        <dd>{% if lic and lic.url != "" %}<a href="{{ lic.url }}" target="_blank" rel="noopener">{{ lic.name }}</a>{% elsif lic %}{{ lic.name }}{% else %}{{ r.license.name | default: r.license.id }}{% endif %}</dd>
         <dt>Version date</dt>
         <dd><time datetime="{{ r.version_date | date: '%Y-%m-%d' }}">{{ r.version_date | date: "%-d %B %Y" }}</time></dd>
         <dt>Language</dt>
@@ -104,7 +104,7 @@ layout: default
         <dd><time datetime="{{ r.date_added | date: '%Y-%m-%d' }}">{{ r.date_added | date: "%-d %B %Y" }}</time></dd>
         {%- endif %}
       </dl>
-      <p class="resource__edit"><a href="{{ site.github_repo }}/edit/main/_resources/{{ page.path | split: '/' | last }}">Suggest an edit</a></p>
+      <p class="resource__edit"><a href="{{ site.github_repo }}/edit/main/_resources/{{ page.path | split: '/' | last }}" target="_blank" rel="noopener">Suggest an edit</a></p>
     </aside>
   </div>
 </article>

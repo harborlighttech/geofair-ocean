@@ -34,6 +34,7 @@ th { background: var(--c-surface); }
 .container { width: min(1080px, 100% - 2rem); margin-inline: auto; }
 main.container { padding: 1.5rem 0 3rem; min-height: 60vh; }
 
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .skip-link { position: absolute; left: -999px; top: 0; background: var(--c-accent); color: var(--c-text); padding: 0.5em 1em; z-index: 100; }
 .skip-link:focus { left: 1rem; }
 
