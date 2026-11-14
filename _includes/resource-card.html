@@ -3,11 +3,11 @@
 {%- assign rtype = site.data.vocab.resource_type.terms | where: "id", r.resource_type | first -%}
 {%- assign level = site.data.vocab.expertise_level.terms | where: "id", r.expertise_level | first -%}
 <article class="card">
-  <p class="card__eyebrow"><span class="chip chip--type">{{ rtype.label | default: r.resource_type }}</span>{% if level %} <span class="chip">{{ level.label }}</span>{% endif %}{% if r.status == "obsolete" %} <span class="chip chip--warning">Obsolete</span>{% endif %}</p>
+  <p class="card__eyebrow"><span class="chip chip--type" title="Resource type: {{ rtype.definition | escape }}">{{ rtype.label | default: r.resource_type }}</span>{% if level %} <span class="chip" title="Expertise level: {{ level.definition | escape }}">{{ level.label }}</span>{% endif %}{% if r.status == "obsolete" %}{% assign st = site.data.vocab.status.terms | where: "id", "obsolete" | first %} <span class="chip chip--warning" title="{{ st.definition | escape }}">{{ st.label }}</span>{% endif %}</p>
   <h3 class="card__title"><a href="{{ r.url | relative_url }}">{{ r.title }}</a></h3>
   <p class="card__description">{{ r.description | truncate: 180 }}</p>
   <p class="card__chips">
-    {%- for sid in r.lifecycle_stages %}{% assign t = site.data.vocab.lifecycle_stage.terms | where: "id", sid | first %}<span class="chip chip--stage">{{ t.label | default: sid }}</span> {% endfor -%}
-    {%- for aid in r.research_areas %}{% assign t = site.data.vocab.research_area.terms | where: "id", aid | first %}<span class="chip chip--area">{{ t.label | default: aid }}</span> {% endfor -%}
+    {%- for sid in r.lifecycle_stages %}{% assign t = site.data.vocab.lifecycle_stage.terms | where: "id", sid | first %}<span class="chip chip--stage" title="Lifecycle stage: {{ t.definition | escape }}">{{ t.label | default: sid }}</span> {% endfor -%}
+    {%- for aid in r.research_areas %}{% assign t = site.data.vocab.research_area.terms | where: "id", aid | first %}<span class="chip chip--area" title="Research area: {{ t.definition | escape }}">{{ t.label | default: aid }}</span> {% endfor -%}
   </p>
 </article>
