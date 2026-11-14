@@ -24,7 +24,7 @@ LABELS = {
     "Title": "title", "URL": "resource_url", "Description": "description", "Resource type": "resource_type",
     "Licence": "license", "Version date": "version_date", "Lifecycle stages": "lifecycle_stages",
     "Research areas": "research_areas", "Audience": "audience", "Expertise level": "expertise_level",
-    "Does the resource cost money?": "access_cost", "Primary language": "language", "Authors": "authors",
+    "Access cost": "access_cost", "Primary language": "language", "Authors": "authors",
     "Learning outcomes": "learning_outcomes", "Keywords": "keywords", "Testimonials": "testimonials",
     "Notes for the page": "notes",
 }
@@ -130,7 +130,7 @@ def main() -> int:
     outcomes = lines(f.get("learning_outcomes", ""))
     if outcomes:
         data["learning_outcomes"] = outcomes
-    cost = (f.get("access_cost", "") or "no").split(" ")[0]
+    cost = term_id(f.get("access_cost", "")) or (f.get("access_cost", "") or "no").split(" ")[0]
     data["access_cost"] = cost if cost in ("no", "yes", "maybe") else "no"
     lvl = term_id(f.get("expertise_level", "")) or (f.get("expertise_level", "") or "").strip().lower()
     if lvl in {t["id"] for t in vocabs["expertise_level"]["terms"]}:

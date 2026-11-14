@@ -14,6 +14,7 @@ pick DefinedTerms out of the JSON-LD "about" array, or a property name).
     {%- when "resource_type" %}{% assign key = "type" %}{% assign src = "learningResourceType" %}
     {%- when "expertise_level" %}{% assign key = "level" %}{% assign src = "educationalLevel" %}
     {%- when "audience" %}{% assign key = "audience" %}{% assign src = "audience" %}
+    {%- when "access_cost" %}{% assign key = "cost" %}{% assign src = "conditionsOfAccess" %}
     {%- else %}{% assign key = f %}{% assign src = "about" %}
   {%- endcase %}
   <fieldset class="facet" data-facet="{{ key }}" data-set="{{ v.id }}" data-source="{{ src }}">
@@ -29,12 +30,6 @@ pick DefinedTerms out of the JSON-LD "about" array, or a property name).
     </ul>
   </fieldset>
   {%- endfor %}
-  <fieldset class="facet" data-facet="free" data-source="isAccessibleForFree">
-    <legend>Cost</legend>
-    <ul class="facet__list">
-      <li class="facet__item"><input type="checkbox" id="f-free" name="free" value="1"><label for="f-free">Free of charge only</label><span class="facet__count" data-count-for="1"></span></li>
-    </ul>
-  </fieldset>
   <fieldset class="facet" data-facet="obsolete" data-source="creativeWorkStatus">
     <legend>Status</legend>
     <ul class="facet__list">

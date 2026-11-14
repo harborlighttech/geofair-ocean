@@ -16,9 +16,9 @@ contact_email: ""                                      # optional; shown in foot
 # Published site location. For a project site this is
 #   url: https://<org>.github.io   baseurl: /<repo>
 # For a user/organisation site or a custom domain, baseurl is "".
-url: "https://harborlighttech.github.io"                       # TODO
+url: "https://example.github.io"                       # TODO
 baseurl: "/geofair-ocean"                              # TODO
-github_repo: "https://github.com/harborlighttech/geofair-ocean"  # TODO
+github_repo: "https://github.com/example/geofair-ocean"  # TODO
 
 # --- Colour scheme ----------------------------------------------------------
 # Each value becomes a CSS custom property (--c-<key>) in <head>, so the whole
@@ -55,16 +55,16 @@ nav:
 
 footer_links:
   - title: "GitHub"
-    url: "https://github.com/harborlighttech/geofair-ocean"   # TODO
+    url: "https://github.com/example/geofair-ocean"   # TODO
   - title: "Suggest a resource"
-    url: "https://github.com/harborlighttech/geofair-ocean/issues/new?template=new-resource.yml"  # TODO
+    url: "https://github.com/example/geofair-ocean/issues/new?template=new-resource.yml"  # TODO
 
 # --- Catalogue behaviour ----------------------------------------------------
 catalogue:
   # Which statuses appear in the public search index. draft and in-review never do.
   indexed_statuses: [published, obsolete]
   # Facets shown on the search page, in order. Remove any you do not want.
-  facets: [lifecycle_stage, resource_type, research_area, expertise_level, audience]
+  facets: [lifecycle_stage, resource_type, research_area, expertise_level, audience, access_cost]
   # Profile the JSON-LD declares conformance to
   conforms_to: "https://bioschemas.org/profiles/TrainingMaterial/1.0-RELEASE"
   # Shown on the home page
@@ -107,6 +107,8 @@ exclude:
   - schema
   - README.md
   - CONTRIBUTING.md
+  - GETTING-STARTED.md
+  - docs
   - LICENSE
   - requirements.txt
   - .github

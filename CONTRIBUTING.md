@@ -25,7 +25,7 @@ Resources are Markdown files in `_resources/`, named in kebab-case (`writing-cf-
 | `keywords[]` | no | strings | Keyword(s) | facet labels are added automatically in the JSON-LD |
 | `audience[]` | no | ids from `_data/vocab/audience.yml` | Target Group | |
 | `learning_outcomes[]` | no | strings | Learning Outcome | one sentence each |
-| `access_cost` | no (default `"no"`) | `"no"` `"yes"` `"maybe"` | Access Cost | **quote the value**: an unquoted `no` is read as `false` |
+| `access_cost` | no (default `"no"`) | `"no"` `"yes"` `"maybe"` (ids from `_data/vocab/access_cost.yml`, shown as Free / Paid / May have a cost) | Access Cost | **quote the value**: an unquoted `no` is read as `false` |
 | `expertise_level` | no | `beginner` `intermediate` `advanced` | Expertise Level | |
 | `lifecycle_stages[]` | yes | ids from `_data/vocab/lifecycle_stage.yml` | — | one or more |
 | `research_areas[]` | yes | ids from `_data/vocab/research_area.yml` | — | one or more |

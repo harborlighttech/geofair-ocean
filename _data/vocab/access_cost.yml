@@ -1,0 +1,23 @@
+# Access cost (single-valued). The RDA Minimal Metadata "Access Cost" element has
+# no external vocabulary; its allowed values are yes / no / maybe. This file fixes
+# the ids to those three values and defines the labels the site shows for them.
+# Emitted in the JSON-LD as schema:conditionsOfAccess (a DefinedTerm) alongside the
+# boolean schema:isAccessibleForFree derived from it.
+id: access-cost
+name: GeoFAIR Access Cost
+description: Whether using the learning resource costs money. Values follow the RDA Minimal Metadata for Learning Resources "Access Cost" element.
+field: access_cost
+cardinality: one
+terms:
+  - id: "no"
+    label: Free
+    definition: The resource can be used at no cost. Registration may still be required.
+    same_as: []
+  - id: "yes"
+    label: Paid
+    definition: A fee is required to use the resource.
+    same_as: []
+  - id: maybe
+    label: May have a cost
+    definition: A fee may apply depending on circumstances such as institutional membership, region or format; the description explains.
+    same_as: []

@@ -31,6 +31,7 @@
     var type = it.learningResourceType;
     var level = it.educationalLevel;
     var status = code(it.creativeWorkStatus) || 'published';
+    var cost = it.conditionsOfAccess;
     var authors = arr(it.author).map(function (a) { return a && a.name ? a.name : ''; });
     var text = [it.name, it.description, arr(it.keywords).join(' '), arr(it.teaches).join(' '), authors.join(' '),
                 stages.map(label).join(' '), areas.map(label).join(' '), label(type), label(level)].join(' ').toLowerCase();
@@ -40,6 +41,7 @@
       stage: stages.map(code), stageLabels: stages.map(label),
       area: areas.map(code), areaLabels: areas.map(label),
       audience: arr(it.audience).map(function (a) { return a && a.audienceType ? a.audienceType : a; }),
+      cost: code(cost) || (it.isAccessibleForFree === false ? 'yes' : 'no'), costLabel: label(cost),
       free: it.isAccessibleForFree === true, status: status, text: text
     };
   });
@@ -63,6 +65,7 @@
       case 'type': return it.type ? [it.type] : [];
       case 'level': return it.level ? [it.level] : [];
       case 'audience': return it.audience;
+      case 'cost': return it.cost ? [it.cost] : [];
       case 'free': return it.free ? ['1'] : [];
       case 'obsolete': return it.status === 'obsolete' ? ['1'] : [];
       default: return [];
@@ -109,7 +112,7 @@
     var desc = it.description.length > 200 ? it.description.slice(0, 197).replace(/\s+\S*$/, '') + '…' : it.description;
     return '<article class="card">' +
       '<p class="card__eyebrow">' + (it.typeLabel ? chip(it.typeLabel, 'chip--type') + ' ' : '') + (it.levelLabel ? chip(it.levelLabel) + ' ' : '') +
-        (it.free ? chip('Free', 'chip--free') + ' ' : '') + (it.status === 'obsolete' ? chip('Obsolete', 'chip--warning') : '') + '</p>' +
+        (it.costLabel ? chip(it.costLabel, it.free ? 'chip--free' : '') + ' ' : '') + (it.status === 'obsolete' ? chip('Obsolete', 'chip--warning') : '') + '</p>' +
       '<h3 class="card__title"><a href="' + esc(it.id) + '">' + esc(it.name) + '</a></h3>' +
       '<p class="card__description">' + esc(desc) + '</p>' +
       '<p class="card__chips">' + it.stageLabels.map(function (l) { return chip(l, 'chip--stage'); }).join(' ') + ' ' +

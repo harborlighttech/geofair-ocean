@@ -42,7 +42,7 @@ def new_resource_form(vocabs: dict, licenses: dict, cfg: dict) -> dict:
             {"type": "checkboxes", "id": "research_areas", "attributes": {"label": "Research areas", "description": "Tick every topic the resource is about (at least one).", "options": [{"label": o} for o in options(vocabs["research_area"])]}},
             {"type": "checkboxes", "id": "audience", "attributes": {"label": "Audience", "options": [{"label": o} for o in options(vocabs["audience"])]}},
             {"type": "dropdown", "id": "expertise_level", "attributes": {"label": "Expertise level", "options": options(vocabs["expertise_level"])}},
-            {"type": "dropdown", "id": "access_cost", "attributes": {"label": "Does the resource cost money?", "options": ["no", "yes", "maybe (explain in the description)"]}},
+            {"type": "dropdown", "id": "access_cost", "attributes": {"label": "Access cost", "description": "If it may have a cost, explain in the description.", "options": options(vocabs["access_cost"])}},
             {"type": "dropdown", "id": "language", "attributes": {"label": "Primary language", "options": ["en", "es", "fr", "de", "pt", "it", "nl", "ja", "zh", "other (say which in the description)"]}},
             {"type": "textarea", "id": "authors", "attributes": {"label": "Authors", "description": "One per line: Name | Person or Organization | ORCID or ROR URL (optional) | affiliation (optional)", "placeholder": "Jane Doe | Person | https://orcid.org/0000-0000-0000-0000 | Example University"}},
             {"type": "textarea", "id": "learning_outcomes", "attributes": {"label": "Learning outcomes", "description": "One per line: what a learner can do after using it."}},

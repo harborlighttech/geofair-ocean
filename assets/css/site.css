@@ -96,10 +96,11 @@ main.container { padding: 1.5rem 0 3rem; min-height: 60vh; }
 /* Resource page */
 .resource__eyebrow { margin: 0 0 0.5em; }
 .resource__title { margin-top: 0; }
+.resource__body > h2:first-of-type { margin-top: 1.25em; }
 .resource__description { font-size: 1.15rem; max-width: 70ch; }
 .resource__cta { margin: 1rem 0 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
 .resource__pid { font-size: 0.9rem; word-break: break-all; }
-.resource__grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+.resource__grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 0.5rem; }
 .resource__meta { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 10px; padding: 1rem 1.25rem; font-size: 0.95rem; align-self: start; }
 .resource__meta dl { margin: 0; }
 .resource__meta dt { font-weight: 700; margin-top: 0.75em; color: var(--c-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
