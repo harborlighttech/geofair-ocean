@@ -136,11 +136,12 @@ body:
 - type: dropdown
   id: access_cost
   attributes:
-    label: Does the resource cost money?
+    label: Access cost
+    description: If it may have a cost, explain in the description.
     options:
-    - 'no'
-    - 'yes'
-    - maybe (explain in the description)
+    - Free [no]
+    - Paid [yes]
+    - May have a cost [maybe]
 - type: dropdown
   id: language
   attributes:
