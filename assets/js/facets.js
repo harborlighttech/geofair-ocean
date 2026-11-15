@@ -26,6 +26,15 @@
   function label(t) { return t && typeof t === 'object' ? (t.name || t.termCode) : t; }
   function desc(t) { return t && typeof t === 'object' ? (t.description || '') : ''; }
 
+  // Object types are emitted as additionalType values (COAR/DCMI URIs or DataCite text);
+  // the facet panel maps each value back to a term id and label via data-match.
+  var objectById = {}, objectByMatch = {};
+  Array.prototype.forEach.call(panel.querySelectorAll('.facet[data-facet="object"] input[data-match]'), function (i) {
+    var l = panel.querySelector('label[for="' + i.id + '"]');
+    objectById[i.value] = { label: l ? l.textContent.trim() : i.value, desc: l ? (l.getAttribute('title') || '') : '' };
+    objectByMatch[i.dataset.match] = i.value;
+  });
+
   var items = raw.map(function (it) {
     var stages = termsIn('lifecycle-stage', it.about);
     var areas = termsIn('research-area', it.about);
@@ -34,15 +43,18 @@
     var status = code(it.creativeWorkStatus) || 'published';
     var cost = it.conditionsOfAccess;
     var statusTerm = it.creativeWorkStatus;
+    var objects = arr(it.additionalType).map(function (v) { return objectByMatch[v]; }).filter(Boolean);
     var authors = arr(it.author).map(function (a) { return a && a.name ? a.name : ''; });
     var text = [it.name, it.description, arr(it.keywords).join(' '), arr(it.teaches).join(' '), authors.join(' '),
-                stages.map(label).join(' '), areas.map(label).join(' '), label(type), label(level)].join(' ').toLowerCase();
+                stages.map(label).join(' '), areas.map(label).join(' '), label(type), label(level),
+                objects.map(function (id) { return objectById[id].label; }).join(' ')].join(' ').toLowerCase();
     return {
       id: it['@id'], name: it.name, description: it.description || '', url: it.url,
       type: code(type), typeLabel: label(type), typeDesc: desc(type), level: code(level), levelLabel: label(level), levelDesc: desc(level),
       stage: stages.map(code), stageLabels: stages.map(label), stageDescs: stages.map(desc),
       area: areas.map(code), areaLabels: areas.map(label), areaDescs: areas.map(desc),
       statusLabel: label(statusTerm), statusDesc: desc(statusTerm),
+      object: objects, objectLabels: objects.map(function (id) { return objectById[id].label; }), objectDescs: objects.map(function (id) { return objectById[id].desc; }),
       audience: arr(it.audience).map(function (a) { return a && a.audienceType ? a.audienceType : a; }),
       cost: code(cost) || (it.isAccessibleForFree === false ? 'yes' : 'no'), costLabel: label(cost), costDesc: desc(cost),
       free: it.isAccessibleForFree === true, status: status, text: text
@@ -66,6 +78,7 @@
       case 'stage': return it.stage;
       case 'area': return it.area;
       case 'type': return it.type ? [it.type] : [];
+      case 'object': return it.object;
       case 'level': return it.level ? [it.level] : [];
       case 'audience': return it.audience;
       case 'cost': return it.cost ? [it.cost] : [];
@@ -114,7 +127,8 @@
   function card(it) {
     var desc = it.description.length > 200 ? it.description.slice(0, 197).replace(/\s+\S*$/, '') + '…' : it.description;
     return '<article class="card">' +
-      '<p class="card__eyebrow">' + (it.typeLabel ? chip(it.typeLabel, 'chip--type', 'Resource type: ' + it.typeDesc) + ' ' : '') + (it.levelLabel ? chip(it.levelLabel, '', 'Expertise level: ' + it.levelDesc) + ' ' : '') +
+      '<p class="card__eyebrow">' + (it.typeLabel ? chip(it.typeLabel, 'chip--type', 'Resource type: ' + it.typeDesc) + ' ' : '') + it.objectLabels.map(function (l, i) { return chip(l, 'chip--object', 'Digital object type: ' + it.objectDescs[i]) + ' '; }).join('') +
+        (it.levelLabel ? chip(it.levelLabel, '', 'Expertise level: ' + it.levelDesc) + ' ' : '') +
         (it.costLabel ? chip(it.costLabel, it.free ? 'chip--free' : '', it.costDesc) + ' ' : '') + (it.status === 'obsolete' ? chip(it.statusLabel || 'Obsolete', 'chip--warning', it.statusDesc) : '') + '</p>' +
       '<h3 class="card__title"><a href="' + esc(it.id) + '">' + esc(it.name) + '</a></h3>' +
       '<p class="card__description">' + esc(desc) + '</p>' +

@@ -12,6 +12,7 @@ layout: default
 <script type="application/ld+json">
 {% include jsonld/resource.html resource=page %}
 </script>
+{%- include object-type-ids.html resource=page -%}
 
 <article class="resource">
   {%- if r.status == "obsolete" %}
@@ -31,6 +32,7 @@ layout: default
     <section class="resource__body">
       <p class="resource__eyebrow">
         <span class="chip chip--type" title="Resource type: {{ rtype.definition | escape }}">{{ rtype.label | default: r.resource_type }}</span>
+        {%- for ot in ot_terms %} <span class="chip chip--object" title="Digital object type: {{ ot.definition | escape }}">{{ ot.label }}</span>{% endfor %}
         {%- if level %} <span class="chip" title="Expertise level: {{ level.definition | escape }}">{{ level.label }}</span>{% endif %}
         {%- if cost %} <span class="chip{% if cost_id == "no" %} chip--free{% endif %}" title="{{ cost.definition | escape }}">{{ cost.label }}</span>{% endif %}
       </p>
@@ -75,6 +77,10 @@ layout: default
 
     <aside class="resource__meta" aria-label="Resource details">
       <dl>
+        {%- if ot_terms.size > 0 %}
+        <dt>Digital object type</dt>
+        <dd>{% for ot in ot_terms %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?object={{ ot.id }}" title="{{ ot.definition | escape }}">{{ ot.label }}</a> {% endfor %}</dd>
+        {%- endif %}
         <dt>Lifecycle stage</dt>
         <dd>{% for sid in r.lifecycle_stages %}{% assign t = site.data.vocab.lifecycle_stage.terms | where: "id", sid | first %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?stage={{ sid }}" title="{{ t.definition | escape }}">{{ t.label | default: sid }}</a> {% endfor %}</dd>
         <dt>Research area</dt>

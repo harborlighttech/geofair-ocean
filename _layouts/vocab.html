@@ -29,7 +29,10 @@ layout: default
       <td>{{ t.label }}</td>
       <td>{{ t.definition }}</td>
       <td>
-        {%- if t.same_as %}{% for u in t.same_as %}<a href="{{ u }}">sameAs</a> {% endfor %}{% endif -%}
+        {%- if t.datacite %}<span>DataCite: <code>{{ t.datacite }}</code></span> {% endif -%}
+        {%- if t.coar %}<a href="{{ t.coar }}" target="_blank" rel="noopener">COAR{% if t.coar_match %} ({{ t.coar_match }} match){% endif %}</a> {% endif -%}
+        {%- if t.dcmi %}<a href="{{ t.dcmi }}" target="_blank" rel="noopener">DCMI</a> {% endif -%}
+        {%- unless t.coar or t.dcmi %}{% if t.same_as %}{% for u in t.same_as %}<a href="{{ u }}">sameAs</a> {% endfor %}{% endif %}{% endunless -%}
         {%- if t.broad_match %}<a href="{{ t.broad_match }}">broadMatch</a> {% endif -%}
         {%- if t.close_match %}<span title="DataCite resourceTypeGeneral">DataCite: {{ t.close_match }}</span>{% endif -%}
       </td>

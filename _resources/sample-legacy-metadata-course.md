@@ -13,6 +13,7 @@ keywords: [metadata, course]
 audience: [data-steward]
 access_cost: "no"
 expertise_level: beginner
+object_types: [interactive-resource]
 lifecycle_stages: [describe]
 research_areas: [research-data-management]
 status: obsolete

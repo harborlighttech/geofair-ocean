@@ -27,6 +27,7 @@ Resources are Markdown files in `_resources/`, named in kebab-case (`writing-cf-
 | `learning_outcomes[]` | no | strings | Learning Outcome | one sentence each |
 | `access_cost` | no (default `"no"`) | `"no"` `"yes"` `"maybe"` (ids from `_data/vocab/access_cost.yml`, shown as Free / Paid / May have a cost) | Access Cost | **quote the value**: an unquoted `no` is read as `false` |
 | `expertise_level` | no | `beginner` `intermediate` `advanced` | Expertise Level | |
+| `object_types[]` | no (derived from `resource_type` when omitted) | ids from `_data/vocab/object_type.yml` (DataCite `resourceTypeGeneral` values in kebab-case, e.g. `dataset`, `software`, `computational-notebook`, `text`) | — | one or more; emitted as `schema:additionalType` COAR URIs |
 | `lifecycle_stages[]` | yes | ids from `_data/vocab/lifecycle_stage.yml` | — | one or more |
 | `research_areas[]` | yes | ids from `_data/vocab/research_area.yml` | — | one or more |
 | `status` | yes | `draft` `in-review` `published` `obsolete` | — | |

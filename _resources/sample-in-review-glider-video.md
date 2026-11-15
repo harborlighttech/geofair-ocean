@@ -14,6 +14,7 @@ keywords: [glider, DOI, repository, quality control]
 audience: [student, researcher]
 access_cost: "no"
 expertise_level: beginner
+object_types: [audiovisual]
 lifecycle_stages: [collect, share]
 research_areas: [ocean-observing-systems]
 status: in-review

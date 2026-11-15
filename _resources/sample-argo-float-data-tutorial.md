@@ -22,6 +22,7 @@ learning_outcomes:
   - "Plot a temperature–salinity section with xarray and matplotlib"
 access_cost: "no"
 expertise_level: beginner
+object_types: [interactive-resource, computational-notebook, dataset]
 lifecycle_stages: [collect, process, analyse, reuse]
 research_areas: [ocean-temperature, salinity-density, ocean-observing-systems]
 status: published

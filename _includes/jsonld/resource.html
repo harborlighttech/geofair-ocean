@@ -31,8 +31,9 @@ structured data on every page comes from this one template.
   "sameAs": {{ pid | jsonify }},
   {%- endif %}
   "learningResourceType": {% include jsonld/term.html vocab=site.data.vocab.resource_type term_id=r.resource_type %},
-  {%- if rtype and rtype.close_match %}
-  "additionalType": {{ rtype.close_match | jsonify }},
+  {%- include object-type-ids.html resource=r -%}
+  {%- if ot_terms.size > 0 %}
+  "additionalType": [{% for ot in ot_terms %}{{ ot.coar | default: ot.dcmi | default: ot.datacite | jsonify }}{% unless forloop.last %}, {% endunless %}{% endfor %}],
   {%- endif %}
   {%- if lic and lic.url != "" %}
   "license": {{ lic.url | jsonify }},

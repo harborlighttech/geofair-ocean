@@ -64,6 +64,8 @@ CI fails if the committed forms are stale.
 
 The research-area list for this instance is based on the NASA GCMD Earth Science Keywords under *Oceans*; the `same_as` entries are left empty for the domain owner to fill with GCMD concept URIs.
 
+`object_type.yml` is the DataCite 4.7 `resourceTypeGeneral` list with COAR Resource Types 3.2 and DCMI Type crosswalks; a resource's `object_types` become `schema:additionalType` values (COAR URI, else DCMI URI, else the DataCite value) and an "Object type" facet.
+
 ## Local development
 
 ```
