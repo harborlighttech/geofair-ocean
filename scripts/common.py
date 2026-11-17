@@ -16,6 +16,8 @@ SCHEMA_FILE = ROOT / "schema" / "resource.schema.json"
 CONFIG_FILE = ROOT / "_config.yml"
 
 SLUG_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+LOCAL_ID_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+FILENAME_RE = re.compile(r"^[A-Za-z0-9._-]+$")
 FRONT_MATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n?(.*)\Z", re.S)
 
 

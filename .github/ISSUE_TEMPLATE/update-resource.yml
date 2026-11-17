@@ -6,10 +6,10 @@ labels:
 - update-resource
 body:
 - type: input
-  id: slug
+  id: local_id
   attributes:
-    label: Resource slug
-    description: The last part of the resource page's URL, e.g. working-with-argo-float-profiles.
+    label: Local identifier
+    description: Shown as 'Catalogue identifier' on the resource page; its URL is /resources/<identifier>/.
   validations:
     required: true
 - type: dropdown

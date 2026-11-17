@@ -21,7 +21,7 @@ import pathlib
 import re
 import sys
 
-from common import ROOT, load_config
+from common import RESOURCES_DIR, ROOT, load_config, split_front_matter
 
 SCRIPT_RE = re.compile(r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', re.S | re.I)
 REQUIRED_LR = ["@id", "name", "description", "url", "learningResourceType", "license", "dateModified",
@@ -112,6 +112,30 @@ def main() -> int:
         n = index_list.get("numberOfItems")
         if n != len(index_list.get("itemListElement", [])):
             errors.append(f"ItemList numberOfItems={n} but {len(index_list.get('itemListElement', []))} elements")
+
+    # Slug aliases: /resources/<local_id>/<slug>/ must exist and point at the canonical page.
+    def jekyll_slugify(text: str) -> str:
+        return re.sub(r"[^\w]+|_+", "-", str(text).lower()).strip("-")
+
+    for src in sorted(RESOURCES_DIR.glob("*.md")):
+        try:
+            fm, _ = split_front_matter(src.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        lid = str(fm.get("local_id", ""))
+        slug = str(fm.get("slug") or jekyll_slugify(fm.get("title", "")))
+        if not lid or not slug:
+            continue
+        canonical = site_dir / "resources" / lid / "index.html"
+        alias = site_dir / "resources" / lid / slug / "index.html"
+        if not canonical.exists():
+            errors.append(f"{src.name}: canonical page resources/{lid}/ was not built")
+        if not alias.exists():
+            errors.append(f"{src.name}: alias page resources/{lid}/{slug}/ was not built (is _plugins/resource_alias.rb running?)")
+        else:
+            text = alias.read_text(encoding="utf-8")
+            if f'rel="canonical" href="{site_root}/resources/{lid}/"' not in text:
+                errors.append(f"{src.name}: alias page does not declare the canonical URL")
 
     if args.shacl:
         try:

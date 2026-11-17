@@ -20,7 +20,10 @@ layout: default
     <strong>Obsolete.</strong> This resource is no longer current.
     {%- if r.superseded_by %}
     {%- assign sup = r.superseded_by -%}
-    {%- unless sup contains "://" %}{% assign sup = "/resources/" | append: sup | append: "/" | relative_url %}{% endunless %}
+    {%- unless sup contains "://" -%}
+      {%- assign sup_doc = site.resources | where: "local_id", sup | first -%}
+      {%- if sup_doc %}{% assign sup = sup_doc.url | relative_url %}{% else %}{% assign sup = "/resources/" | append: sup | append: "/" | relative_url %}{% endif -%}
+    {%- endunless %}
     See the <a href="{{ sup }}"{% if r.superseded_by contains "://" %} target="_blank" rel="noopener"{% endif %}>replacement</a>.
     {%- endif %}
   </div>
@@ -105,6 +108,8 @@ layout: default
         {%- endif %}
         <dt>Status</dt>
         <dd>{{ st.label | default: r.status }}</dd>
+        <dt>Catalogue identifier</dt>
+        <dd><code>{{ r.local_id }}</code><br><a href="{{ page.url | absolute_url }}" class="muted">{{ page.url | absolute_url }}</a></dd>
         {%- if r.date_added %}
         <dt>Added to catalogue</dt>
         <dd><time datetime="{{ r.date_added | date: '%Y-%m-%d' }}">{{ r.date_added | date: "%-d %B %Y" }}</time></dd>

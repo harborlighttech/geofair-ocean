@@ -1,5 +1,7 @@
 ---
 # SAMPLE ENTRY — replace or delete before launch. Shows an obsolete entry with a replacement.
+local_id: sample-005
+slug: legacy-metadata-course
 title: "Ocean metadata essentials (2019 edition)"
 description: "A self-paced course on describing ocean datasets, written for an earlier metadata standard. Superseded by the CF-compliant netCDF guide; kept for reference."
 resource_url: https://example.org/courses/ocean-metadata-2019
@@ -17,6 +19,6 @@ object_types: [interactive-resource]
 lifecycle_stages: [describe]
 research_areas: [research-data-management]
 status: obsolete
-superseded_by: sample-cf-conventions-guide
+superseded_by: sample-002
 date_added: 2025-03-02
 ---

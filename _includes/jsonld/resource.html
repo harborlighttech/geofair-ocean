@@ -26,8 +26,8 @@ structured data on every page comes from this one template.
   "url": {{ r.resource_url | jsonify }},
   {%- assign pid = r.identifier | default: "" -%}
   {%- if pid == "" and r.url_type and r.url_type != "URL" %}{% assign pid = r.resource_url %}{% endif -%}
+  "identifier": [{"@type": "PropertyValue", "propertyID": "geofair-local-id", "name": "GeoFAIR local identifier", "value": {{ r.local_id | jsonify }}}{% if pid != "" %}, {{ pid | jsonify }}{% endif %}],
   {%- if pid != "" %}
-  "identifier": {{ pid | jsonify }},
   "sameAs": {{ pid | jsonify }},
   {%- endif %}
   "learningResourceType": {% include jsonld/term.html vocab=site.data.vocab.resource_type term_id=r.resource_type %},
@@ -86,7 +86,10 @@ structured data on every page comes from this one template.
   "creativeWorkStatus": {% include jsonld/term.html vocab=site.data.vocab.status term_id=r.status %},
   {%- if r.superseded_by %}
   {%- assign sup = r.superseded_by -%}
-  {%- unless sup contains "://" %}{% assign sup = site_root | append: "/resources/" | append: sup | append: "/" %}{% endunless %}
+  {%- unless sup contains "://" -%}
+    {%- assign sup_doc = site.resources | where: "local_id", sup | first -%}
+    {%- if sup_doc %}{% assign sup = site_root | append: sup_doc.url %}{% else %}{% assign sup = site_root | append: "/resources/" | append: sup | append: "/" %}{% endif -%}
+  {%- endunless %}
   "dct:isReplacedBy": {"@id": {{ sup | jsonify }}},
   {%- endif %}
   {%- if r.testimonials and r.testimonials.size > 0 %}

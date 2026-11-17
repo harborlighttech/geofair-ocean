@@ -1,5 +1,7 @@
 ---
 # SAMPLE ENTRY — replace or delete before launch. The URL is a placeholder.
+local_id: sample-003
+slug: dmp-for-cruises-webinar
 title: "Data management planning for research cruises (webinar recording)"
 description: "A 55-minute recorded webinar on writing a data management plan for a multi-disciplinary research cruise: inventorying instruments and expected data volumes, assigning data responsibilities, choosing repositories, and meeting funder public-access requirements. Slides and a DMP template are linked from the recording page."
 resource_url: https://example.org/webinars/cruise-dmp

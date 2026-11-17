@@ -48,6 +48,8 @@ scripts/                    validators, Issue-form generator, issue-to-resource 
 
 Contributors use the **Suggest a resource** Issue form; the workflow turns it into a pull request with `status: in-review`. Maintainers review, set `status: published`, and merge. Maintainers can also add a file to `_resources/` directly; `CONTRIBUTING.md` has the field reference.
 
+Every resource carries an author-assigned `local_id` (letters, digits, `.`, `-`, `_`), unique across the catalogue; the file is named `<local_id>.md` and the canonical page URL is `/resources/<local_id>/`. A readable alias `/resources/<local_id>/<slug>/` (from the optional `slug` field, otherwise the title) redirects to the canonical page; `_plugins/resource_alias.rb` generates these aliases, so they exist in the Actions build and in local `jekyll build`, but not under the GitHub Pages default builder (which runs `--safe`). CI rejects a missing, malformed or duplicate identifier, a filename that does not match it, and a build missing any alias page.
+
 Status rules: `draft` and `in-review` pages are built (so reviewers can preview them) but carry `noindex` and never enter the search index; `published` entries are listed; `obsolete` entries are indexed but hidden on the search page until the visitor ticks *Include obsolete*.
 
 ## Vocabularies

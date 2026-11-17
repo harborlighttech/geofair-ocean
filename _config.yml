@@ -96,7 +96,7 @@ permalink: pretty
 timezone: UTC
 strict_front_matter: true
 
-plugins: []                 # none required; see README for optional ones
+plugins: []                 # no gem plugins; _plugins/resource_alias.rb is a local generator (needs a non --safe build)
 
 exclude:
   - Gemfile
