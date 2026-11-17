@@ -31,6 +31,13 @@ def load_yaml(path: pathlib.Path) -> Any:
         return yaml.load(fh, Loader=_Loader)
 
 
+def is_skipped(path: pathlib.Path) -> bool:
+    """A resource file whose name starts with '_' is not built by Jekyll (collection
+    entries starting with '_' or '.' are 'special' and ignored). The validator still
+    checks such files, but reports their problems as warnings."""
+    return path.name.startswith(("_", "."))
+
+
 def load_config() -> dict:
     return load_yaml(CONFIG_FILE)
 
