@@ -39,7 +39,7 @@ theme_colors:
   link: "#007DBA"
   success: "#0B6B4F"
   warning: "#8C6410"
-  danger: "#A24B2E"
+  danger: "#B3261E"       # Obsolete badge background (white lettering)
 
 # --- Typography -------------------------------------------------------------
 # display: headings, labels, navigation, buttons. body: running prose.

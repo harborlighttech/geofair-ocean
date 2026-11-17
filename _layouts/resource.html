@@ -38,6 +38,7 @@ layout: default
         {%- for ot in ot_terms %} <span class="chip chip--object" title="Digital object type: {{ ot.definition | escape }}">{{ ot.label }}</span>{% endfor %}
         {%- if level %} <span class="chip" title="Expertise level: {{ level.definition | escape }}">{{ level.label }}</span>{% endif %}
         {%- if cost %} <span class="chip{% if cost_id == "no" %} chip--free{% endif %}" title="{{ cost.definition | escape }}">{{ cost.label }}</span>{% endif %}
+        {%- if r.status == "obsolete" and st %} <span class="chip chip--obsolete" title="{{ st.definition | escape }}">{{ st.label }}</span>{% endif %}
       </p>
       <h1 class="resource__title">{{ r.title }}</h1>
       <p class="resource__description">{{ r.description }}</p>
