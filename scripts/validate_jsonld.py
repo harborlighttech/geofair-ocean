@@ -141,6 +141,10 @@ def main() -> int:
             text = alias.read_text(encoding="utf-8")
             if f'rel="canonical" href="{site_root}/resources/{lid}/"' not in text:
                 errors.append(f"{src.name}: alias page does not declare the canonical URL")
+            if f'"@id": "{site_root}/resources/{lid}/"' not in text:
+                errors.append(f"{src.name}: alias page JSON-LD @id is not the canonical URL")
+            if f'"mainEntityOfPage": "{site_root}/resources/{lid}/{slug}/"' not in text:
+                errors.append(f"{src.name}: alias page JSON-LD mainEntityOfPage is not the readable URL")
 
     if args.shacl:
         try:

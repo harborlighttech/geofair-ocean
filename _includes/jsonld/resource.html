@@ -6,7 +6,9 @@ structured data on every page comes from this one template.
 {%- endcomment -%}
 {%- assign r = include.resource -%}
 {%- assign site_root = site.url | append: site.baseurl -%}
-{%- assign page_url = site_root | append: r.url -%}
+{%- if r.canonical_path %}{% assign page_url = site_root | append: r.canonical_path %}{% else %}{% assign page_url = site_root | append: r.url %}{% endif -%}
+{%- capture rpath %}{% include resource-path.html resource=r %}{% endcapture -%}
+{%- assign pretty_url = site_root | append: rpath | strip -%}
 {%- assign lic = site.data.licenses[r.license.id] -%}
 {%- assign rtype = site.data.vocab.resource_type.terms | where: "id", r.resource_type | first -%}
 {%- comment -%} keywords = free keywords + every facet label {%- endcomment -%}
@@ -19,7 +21,7 @@ structured data on every page comes from this one template.
   "@context": {"@vocab": "https://schema.org/", "dct": "http://purl.org/dc/terms/", "broadMatch": "http://www.w3.org/2004/02/skos/core#broadMatch"},
   "@type": "LearningResource",
   "@id": {{ page_url | jsonify }},
-  "mainEntityOfPage": {{ page_url | jsonify }},
+  "mainEntityOfPage": {{ pretty_url | jsonify }},
   "dct:conformsTo": {"@id": {{ site.catalogue.conforms_to | jsonify }}},
   "name": {{ r.title | jsonify }},
   "description": {{ r.description | jsonify }},
@@ -88,7 +90,7 @@ structured data on every page comes from this one template.
   {%- assign sup = r.superseded_by -%}
   {%- unless sup contains "://" -%}
     {%- assign sup_doc = site.resources | where: "local_id", sup | first -%}
-    {%- if sup_doc %}{% assign sup = site_root | append: sup_doc.url %}{% else %}{% assign sup = site_root | append: "/resources/" | append: sup | append: "/" %}{% endif -%}
+    {%- if sup_doc %}{% capture sup_path %}{% include resource-path.html resource=sup_doc %}{% endcapture %}{% assign sup = site_root | append: sup_path | strip %}{% else %}{% assign sup = site_root | append: "/resources/" | append: sup | append: "/" %}{% endif -%}
   {%- endunless %}
   "dct:isReplacedBy": {"@id": {{ sup | jsonify }}},
   {%- endif %}

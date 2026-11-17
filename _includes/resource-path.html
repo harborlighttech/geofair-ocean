@@ -1,0 +1,9 @@
+{%- comment -%}
+Prints the readable path of a resource: /resources/<local_id>/<slug>/ (site-relative,
+without baseurl). Parameter: resource. Use with capture:
+  {% capture rpath %}{% include resource-path.html resource=r %}{% endcapture %}
+The canonical URL is the resource's own page URL (/resources/<local_id>/).
+{%- endcomment -%}
+{%- assign rp_res = include.resource -%}
+{%- if rp_res.slug and rp_res.slug != "" %}{% assign rp_slug = rp_res.slug %}{% else %}{% assign rp_slug = rp_res.title | slugify %}{% endif -%}
+{%- if rp_slug == "" %}{{ rp_res.canonical_path | default: rp_res.url }}{% else %}/resources/{{ rp_res.local_id }}/{{ rp_slug }}/{% endif -%}
