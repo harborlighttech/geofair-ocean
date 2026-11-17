@@ -27,9 +27,15 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("files", nargs="*", help="resource files (default: all of _resources/)")
     ap.add_argument("--check-urls", action="store_true", help="HEAD-request each resource_url")
+    ap.add_argument("--include-tests", action="store_true", help="also check the _test-*.md fixtures (see scripts/test_validation.py)")
     args = ap.parse_args()
 
     files = [RESOURCES_DIR.parent / f for f in args.files] if args.files else sorted(RESOURCES_DIR.glob("*.md"))
+    if not args.include_tests:
+        files = [f for f in files if not f.name.startswith("_test-")]
+    # Live files first, so a duplicate id or title in a skipped file is reported on
+    # the skipped file (as a warning), never on the live one.
+    files.sort(key=lambda f: (is_skipped(f), f.name))
     schema = json.loads(SCHEMA_FILE.read_text(encoding="utf-8"))
     validator = jsonschema.Draft202012Validator(schema, format_checker=jsonschema.FormatChecker())
     vocabs = load_vocabs()

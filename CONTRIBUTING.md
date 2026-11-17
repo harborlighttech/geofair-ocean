@@ -10,6 +10,8 @@ Resources are Markdown files in `_resources/`. Every resource has an author-assi
 
 **Keeping a resource out of the build:** a file whose name starts with an underscore (`_resources/_my-id.md`) is ignored by Jekyll — no page, no search entry, no JSON-LD — while staying in the repository. Use this for work in progress or entries awaiting permission. The validator still checks such files (so they are ready to publish) but reports their problems as warnings rather than failing the build. Rename the file to `<local_id>.md` to publish it. `_resources/_template.md` is a copyable template that is skipped this way.
 
+The `_resources/_test-*.md` files are **validation fixtures**: each one breaks exactly one rule (named in the filename) and carries a `# EXPECT:` line with the message the validator must produce. They are skipped from the build and ignored by `validate_resources.py` unless run with `--include-tests`; `scripts/test_validation.py` runs them in CI. When you add a validation rule, add a fixture for it.
+
 ### Field reference
 
 | Field | Required | Type | RDA element | Notes |
