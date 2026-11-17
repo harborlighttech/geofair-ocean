@@ -14,14 +14,17 @@
 # Resource files are named <local_id>_<slug>.md. The canonical URL comes from the
 # front matter's local_id, not the filename, and the slug comes from the filename
 # (after "<local_id>_") unless the front matter sets `slug` explicitly.
-Jekyll::Hooks.register :documents, :post_read do |doc|
-  next unless doc.collection && doc.collection.label == "resources"
+Jekyll::Hooks.register :site, :post_read do |site|
+  collection = site.collections["resources"]
+  next unless collection
 
-  local_id = doc.data["local_id"].to_s
-  next if local_id.empty?
+  collection.docs.each do |doc|
+    local_id = doc.data["local_id"].to_s
+    next if local_id.empty?
 
-  doc.data["permalink"] = "/resources/#{local_id}/"
-  if doc.data["slug"].to_s.empty?
+    doc.data["permalink"] = "/resources/#{local_id}/"
+    next unless doc.data["slug"].to_s.empty?
+
     stem = File.basename(doc.relative_path, ".*")
     doc.data["slug"] = stem.sub(/\A#{Regexp.escape(local_id)}_/, "") if stem.start_with?("#{local_id}_")
   end
