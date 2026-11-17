@@ -5,7 +5,8 @@
 {%- include object-type-ids.html resource=r -%}
 <article class="card">
   <p class="card__eyebrow"><span class="chip chip--type" title="Resource type: {{ rtype.definition | escape }}">{{ rtype.label | default: r.resource_type }}</span>{% for ot in ot_terms %} <span class="chip chip--object" title="Digital object type: {{ ot.definition | escape }}">{{ ot.label }}</span>{% endfor %}{% if level %} <span class="chip" title="Expertise level: {{ level.definition | escape }}">{{ level.label }}</span>{% endif %}{% if r.status == "obsolete" %}{% assign st = site.data.vocab.status.terms | where: "id", "obsolete" | first %} <span class="chip chip--warning" title="{{ st.definition | escape }}">{{ st.label }}</span>{% endif %}</p>
-  <h3 class="card__title"><a href="{{ r.url | relative_url }}">{{ r.title }}</a></h3>
+  {%- capture rpath %}{% include resource-path.html resource=r %}{% endcapture -%}
+  <h3 class="card__title"><a href="{{ rpath | strip | relative_url }}">{{ r.title }}</a></h3>
   <p class="card__description">{{ r.description | truncate: 180 }}</p>
   <p class="card__chips">
     {%- for sid in r.lifecycle_stages %}{% assign t = site.data.vocab.lifecycle_stage.terms | where: "id", sid | first %}<span class="chip chip--stage" title="Lifecycle stage: {{ t.definition | escape }}">{{ t.label | default: sid }}</span> {% endfor -%}

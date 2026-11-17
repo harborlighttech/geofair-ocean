@@ -11,7 +11,7 @@
   {%- if noindex %}
   <meta name="robots" content="noindex">
   {%- endif %}
-  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="canonical" href="{{ page.canonical_path | default: page.url | absolute_url }}">
   {%- if site.fonts.google_fonts_url and site.fonts.google_fonts_url != "" %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

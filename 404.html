@@ -1,0 +1,26 @@
+---
+layout: default
+title: Page not found
+permalink: /404.html
+noindex: true
+---
+<h1>Page not found</h1>
+<p class="lead" id="nf-lead">There is no page at this address.</p>
+<p><a class="button" href="{{ '/resources/' | relative_url }}">Browse the resources</a> <a class="button button--ghost" href="{{ '/' | relative_url }}">Home</a></p>
+<script>
+(function () {
+  // /resources/<local_id>/<anything>  ->  /resources/<local_id>/  (the canonical page).
+  // The slug part of a resource URL is decorative; the local identifier is what resolves.
+  var base = {{ site.baseurl | jsonify }};
+  var path = location.pathname;
+  if (base && path.indexOf(base) === 0) path = path.slice(base.length);
+  var m = path.match(/^\/resources\/([A-Za-z0-9._-]+)(?:\/.*)?$/);
+  if (m && path !== '/resources/' + m[1] + '/') {
+    var target = base + '/resources/' + m[1] + '/';
+    var lead = document.getElementById('nf-lead');
+    if (lead) lead.textContent = 'Taking you to resource ' + m[1] + '…';
+    location.replace(target + location.search + location.hash);
+  }
+})();
+</script>
+<noscript><p>If you followed a link to a resource, remove everything after the identifier in the address, e.g. <code>/resources/&lt;identifier&gt;/</code>.</p></noscript>

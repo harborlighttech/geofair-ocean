@@ -22,7 +22,7 @@ layout: default
     {%- assign sup = r.superseded_by -%}
     {%- unless sup contains "://" -%}
       {%- assign sup_doc = site.resources | where: "local_id", sup | first -%}
-      {%- if sup_doc %}{% assign sup = sup_doc.url | relative_url %}{% else %}{% assign sup = "/resources/" | append: sup | append: "/" | relative_url %}{% endif -%}
+      {%- if sup_doc %}{% capture sup_path %}{% include resource-path.html resource=sup_doc %}{% endcapture %}{% assign sup = sup_path | strip | relative_url %}{% else %}{% assign sup = "/resources/" | append: sup | append: "/" | relative_url %}{% endif -%}
     {%- endunless %}
     See the <a href="{{ sup }}"{% if r.superseded_by contains "://" %} target="_blank" rel="noopener"{% endif %}>replacement</a>.
     {%- endif %}
@@ -109,13 +109,13 @@ layout: default
         <dt>Status</dt>
         <dd>{{ st.label | default: r.status }}</dd>
         <dt>Catalogue identifier</dt>
-        <dd><code>{{ r.local_id }}</code><br><a href="{{ page.url | absolute_url }}" class="muted">{{ page.url | absolute_url }}</a></dd>
+        <dd><code>{{ r.local_id }}</code><br><a href="{{ page.canonical_path | default: page.url | absolute_url }}" class="muted">{{ page.canonical_path | default: page.url | absolute_url }}</a></dd>
         {%- if r.date_added %}
         <dt>Added to catalogue</dt>
         <dd><time datetime="{{ r.date_added | date: '%Y-%m-%d' }}">{{ r.date_added | date: "%-d %B %Y" }}</time></dd>
         {%- endif %}
       </dl>
-      <p class="resource__edit"><a href="{{ site.github_repo }}/edit/main/_resources/{{ page.path | split: '/' | last }}" target="_blank" rel="noopener">Suggest an edit</a></p>
+      <p class="resource__edit"><a href="{{ site.github_repo }}/edit/main/_resources/{{ page.source_path | default: page.path | split: '/' | last }}" target="_blank" rel="noopener">Suggest an edit</a></p>
     </aside>
   </div>
 </article>

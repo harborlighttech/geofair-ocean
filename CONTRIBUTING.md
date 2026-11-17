@@ -6,7 +6,7 @@ Use the **Suggest a resource** Issue form in this repository. A workflow convert
 
 ## Adding or editing a resource file (maintainers)
 
-Resources are Markdown files in `_resources/`. Every resource has an author-assigned **local identifier** (`local_id`: letters, digits, `.`, `-`, `_`; unique in the catalogue, case-insensitively), and the file is named `<local_id>.md`, which makes the canonical URL `/resources/<local_id>/`. A readable alias `/resources/<local_id>/<slug>/` (slug from the optional `slug` field, otherwise the title) redirects to it. The front matter is the record; the Markdown body is optional notes shown on the page.
+Resources are Markdown files in `_resources/`. Every resource has an author-assigned **local identifier** (`local_id`: letters, digits, `.`, `-`, `_`; unique in the catalogue, case-insensitively), and the file is named `<local_id>.md`, which makes the canonical URL `/resources/<local_id>/`. Site links use the readable form `/resources/<local_id>/<slug>/` (slug from the optional `slug` field, otherwise the title), a full copy of the page that declares the canonical URL; a misspelled slug still resolves via `404.html` because the identifier is what counts. The front matter is the record; the Markdown body is optional notes shown on the page.
 
 **Keeping a resource out of the build:** a file whose name starts with an underscore (`_resources/_my-id.md`) is ignored by Jekyll — no page, no search entry, no JSON-LD — while staying in the repository. Use this for work in progress or entries awaiting permission. The validator still checks such files (so they are ready to publish) but reports their problems as warnings rather than failing the build. Rename the file to `<local_id>.md` to publish it. `_resources/_template.md` is a copyable template that is skipped this way.
 
@@ -15,7 +15,7 @@ Resources are Markdown files in `_resources/`. Every resource has an author-assi
 | Field | Required | Type | RDA element | Notes |
 | --- | --- | --- | --- | --- |
 | `local_id` | yes | `[A-Za-z0-9._-]+`, ≤ 64 chars | — | author-assigned, unique; file is `<local_id>.md`; canonical URL `/resources/<local_id>/` |
-| `slug` | no | kebab-case | — | readable alias `/resources/<local_id>/<slug>/`; defaults to the slugified title |
+| `slug` | no | kebab-case | — | readable URL `/resources/<local_id>/<slug>/` used by site links; defaults to the slugified title; canonical stays `/resources/<local_id>/` |
 | `title` | yes | string ≤ 1000 | Title | as on the resource |
 | `description` | yes | string 40–2000 | Abstract / Description | plain text |
 | `resource_url` | yes | URL | URL to Resource | landing page or PID |

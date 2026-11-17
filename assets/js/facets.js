@@ -49,7 +49,7 @@
                 stages.map(label).join(' '), areas.map(label).join(' '), label(type), label(level),
                 objects.map(function (id) { return objectById[id].label; }).join(' ')].join(' ').toLowerCase();
     return {
-      id: it['@id'], name: it.name, description: it.description || '', url: it.url,
+      id: it['@id'], page: it.mainEntityOfPage || it['@id'], name: it.name, description: it.description || '', url: it.url,
       type: code(type), typeLabel: label(type), typeDesc: desc(type), level: code(level), levelLabel: label(level), levelDesc: desc(level),
       stage: stages.map(code), stageLabels: stages.map(label), stageDescs: stages.map(desc),
       area: areas.map(code), areaLabels: areas.map(label), areaDescs: areas.map(desc),
@@ -130,7 +130,7 @@
       '<p class="card__eyebrow">' + (it.typeLabel ? chip(it.typeLabel, 'chip--type', 'Resource type: ' + it.typeDesc) + ' ' : '') + it.objectLabels.map(function (l, i) { return chip(l, 'chip--object', 'Digital object type: ' + it.objectDescs[i]) + ' '; }).join('') +
         (it.levelLabel ? chip(it.levelLabel, '', 'Expertise level: ' + it.levelDesc) + ' ' : '') +
         (it.costLabel ? chip(it.costLabel, it.free ? 'chip--free' : '', it.costDesc) + ' ' : '') + (it.status === 'obsolete' ? chip(it.statusLabel || 'Obsolete', 'chip--warning', it.statusDesc) : '') + '</p>' +
-      '<h3 class="card__title"><a href="' + esc(it.id) + '">' + esc(it.name) + '</a></h3>' +
+      '<h3 class="card__title"><a href="' + esc(it.page) + '">' + esc(it.name) + '</a></h3>' +
       '<p class="card__description">' + esc(desc) + '</p>' +
       '<p class="card__chips">' + it.stageLabels.map(function (l, i) { return chip(l, 'chip--stage', 'Lifecycle stage: ' + it.stageDescs[i]); }).join(' ') + ' ' +
         it.areaLabels.map(function (l, i) { return chip(l, 'chip--area', 'Research area: ' + it.areaDescs[i]); }).join(' ') + '</p>' +
