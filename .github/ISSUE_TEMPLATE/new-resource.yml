@@ -10,6 +10,15 @@ body:
     value: Thanks for suggesting a resource. Fields marked required must be filled; everything else helps people find and
       judge the resource. A maintainer will review and may edit before publishing.
 - type: input
+  id: local_id
+  attributes:
+    label: Local identifier
+    description: A short identifier you assign, unique in this catalogue. Letters, digits, dot, dash and underscore only (e.g.
+      argo-python-2025 or NOAA.CF-guide_v2). It becomes part of the resource's URL.
+    placeholder: my-resource-id
+  validations:
+    required: true
+- type: input
   id: title
   attributes:
     label: Title

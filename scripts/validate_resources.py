@@ -14,12 +14,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 
 import jsonschema
 
-from common import (RESOURCES_DIR, SCHEMA_FILE, SLUG_RE, load_licenses, load_vocabs,
-                    normalise_dates, split_front_matter)
+from common import (FILENAME_RE, LOCAL_ID_RE, RESOURCES_DIR, SCHEMA_FILE, SLUG_RE, load_licenses,
+                    load_vocabs, normalise_dates, split_front_matter)
 
 
 def main() -> int:
@@ -35,7 +36,15 @@ def main() -> int:
     licenses = load_licenses()
     vocab_ids = {k: {t["id"] for t in v["terms"]} for k, v in vocabs.items()}
     field_to_vocab = {v["field"]: k for k, v in vocabs.items()}
-    all_slugs = {p.stem for p in RESOURCES_DIR.glob("*.md")}
+    # local_id of every resource file (for superseded_by checks), read up front
+    all_local_ids: dict[str, str] = {}
+    for p in RESOURCES_DIR.glob("*.md"):
+        try:
+            d, _ = split_front_matter(p.read_text(encoding="utf-8"))
+            if isinstance(d.get("local_id"), str):
+                all_local_ids.setdefault(d["local_id"], p.name)
+        except Exception:  # noqa: BLE001
+            pass
 
     errors: list[str] = []
     warnings: list[str] = []
@@ -56,18 +65,42 @@ def main() -> int:
             else:
                 seen[val] = t["id"]
     titles: dict[str, str] = {}
+    local_ids: dict[str, str] = {}        # exact id -> file
+    local_ids_ci: dict[str, str] = {}     # lower-cased id -> file
     records: list[tuple[str, dict]] = []
 
     for path in files:
         name = path.name
-        if not SLUG_RE.match(path.stem):
-            errors.append(f"{name}: filename must be kebab-case (a-z, 0-9, hyphens)")
+        if not FILENAME_RE.match(path.stem):
+            errors.append(f"{name}: filename may only use letters, digits, dot, dash and underscore")
         try:
             data, _body = split_front_matter(path.read_text(encoding="utf-8"))
         except Exception as exc:  # noqa: BLE001
             errors.append(f"{name}: {exc}")
             continue
         data = normalise_dates(data)
+
+        # Local identifier: present, allowed characters, unique, and the file is named after it.
+        lid = data.get("local_id")
+        if lid is None or lid == "":
+            errors.append(f"{name}: local_id is missing (required; letters, digits, '.', '-', '_')")
+        elif not isinstance(lid, str):
+            errors.append(f"{name}: local_id must be a quoted string (YAML read {lid!r} as {type(lid).__name__})")
+        elif not LOCAL_ID_RE.match(lid):
+            bad = sorted({c for c in lid if not re.match(r"[A-Za-z0-9._-]", c)})
+            errors.append(f"{name}: local_id '{lid}' contains disallowed character(s) {bad}; allowed: letters, digits, '.', '-', '_'")
+        else:
+            if lid in local_ids:
+                errors.append(f"{name}: local_id '{lid}' is already used by {local_ids[lid]}")
+            elif lid.lower() in local_ids_ci:
+                errors.append(f"{name}: local_id '{lid}' differs only by case from '{local_ids_ci[lid.lower()]}'; ids must be unique case-insensitively (URLs and macOS filenames collide)")
+            local_ids.setdefault(lid, name)
+            local_ids_ci.setdefault(lid.lower(), name)
+            stem = path.stem
+            if not (stem == lid or stem.startswith(lid + "-") and len(stem) > len(lid) + 1):
+                errors.append(f"{name}: filename must be '{lid}.md' or '{lid}-<slug>.md' so the URL carries the local_id")
+            elif stem != lid and not SLUG_RE.match(stem[len(lid) + 1:]):
+                errors.append(f"{name}: the part after '{lid}-' must be a kebab-case slug (a-z, 0-9, hyphens)")
 
         # Common YAML trap: unquoted no/yes becomes a boolean.
         if isinstance(data.get("access_cost"), bool):
@@ -91,8 +124,8 @@ def main() -> int:
             errors.append(f"{name}: license.id '{lic['id']}' is not in _data/licenses.yml")
 
         sup = data.get("superseded_by")
-        if sup and "://" not in sup and sup not in all_slugs:
-            errors.append(f"{name}: superseded_by '{sup}' is not a resource slug in _resources/")
+        if sup and "://" not in sup and sup not in all_local_ids:
+            errors.append(f"{name}: superseded_by '{sup}' is not the local_id of any resource in _resources/")
         if not data.get("object_types"):
             warnings.append(f"{name}: no object_types; the build will derive one from resource_type")
         if data.get("status") == "obsolete" and not sup:

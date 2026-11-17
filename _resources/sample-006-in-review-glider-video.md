@@ -1,6 +1,7 @@
 ---
 # SAMPLE ENTRY — replace or delete before launch. Shows an in-review entry: it builds
 # with a noindex tag but is not listed in the catalogue or the JSON-LD index.
+local_id: sample-006
 title: "From glider to repository: a 12-minute walkthrough"
 description: "A short video following one glider mission's data from recovery to a published dataset with a DOI, pointing out where metadata is added and where quality control happens."
 resource_url: https://example.org/videos/glider-to-repository

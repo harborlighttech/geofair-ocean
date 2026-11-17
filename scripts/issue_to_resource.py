@@ -14,14 +14,14 @@ import datetime as dt
 import re
 import sys
 
-from common import RESOURCES_DIR, dump_front_matter, guess_url_type, load_vocabs, slugify
+from common import LOCAL_ID_RE, RESOURCES_DIR, dump_front_matter, guess_url_type, load_vocabs, slugify
 
 HEADING_RE = re.compile(r"^###\s+(.+?)\s*$", re.M)
 ID_RE = re.compile(r"\[([a-z0-9-]+)\]\s*$")
 
 # Map form labels (see build_issue_form.py) to front-matter fields.
 LABELS = {
-    "Title": "title", "URL": "resource_url", "Description": "description", "Resource type": "resource_type",
+    "Local identifier": "local_id", "Title": "title", "URL": "resource_url", "Description": "description", "Resource type": "resource_type",
     "Licence": "license", "Version date": "version_date", "Lifecycle stages": "lifecycle_stages",
     "Research areas": "research_areas", "Digital object types": "object_types", "Audience": "audience", "Expertise level": "expertise_level",
     "Access cost": "access_cost", "Primary language": "language", "Authors": "authors",
@@ -104,7 +104,11 @@ def main() -> int:
     f = parse_body(body)
     vocabs = load_vocabs()
 
+    local_id = f.get("local_id", "").strip()
+    if not LOCAL_ID_RE.match(local_id):
+        sys.exit(f"ERROR local identifier {local_id!r} is missing or uses characters outside letters, digits, '.', '-', '_'")
     data: dict = {
+        "local_id": local_id,
         "title": f.get("title", "").strip(),
         "description": " ".join(f.get("description", "").split()),
         "resource_url": f.get("resource_url", "").strip(),
@@ -146,12 +150,10 @@ def main() -> int:
         data["testimonials"] = tms
     data["date_added"] = args.date
 
-    slug = args.slug or slugify(data["title"])
-    path = RESOURCES_DIR / f"{slug}.md"
-    n = 2
-    while path.exists():
-        path = RESOURCES_DIR / f"{slug}-{n}.md"
-        n += 1
+    slug = args.slug or slugify(data["title"], max_len=60)
+    path = RESOURCES_DIR / f"{local_id}-{slug}.md"
+    if path.exists() or any(p.stem == local_id or p.stem.startswith(local_id + "-") for p in RESOURCES_DIR.glob("*.md")):
+        sys.exit(f"ERROR a resource with local identifier {local_id!r} already exists")
     body_md = (f.get("notes", "") or "").strip()
     path.write_text(dump_front_matter(data, body_md + ("\n" if body_md else "")), encoding="utf-8")
     print(path.relative_to(RESOURCES_DIR.parent))

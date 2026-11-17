@@ -18,7 +18,7 @@ Key design decisions, from your answers:
 | Cardinality | Lifecycle stage and research area multi-valued; resource type and status single-valued |
 | Testimonials | `schema:Review` with `reviewBody` and `author` (Person or Organization) |
 | Status | Draft, In Review, Published, Obsolete via `schema:creativeWorkStatus`; Draft and In Review build but are excluded from the search index and marked `noindex`; Obsolete is shown but filtered out until the visitor opts in |
-| Identifiers | Resource page URL is the record's `@id`; the described material's own DOI/handle goes in `identifier` and `resource_url` (the front-matter field is `resource_url`, not `url`, because Jekyll reserves `url` for a document's own page path) |
+| Identifiers | Every resource has an author-assigned `local_id` (letters, digits, `.`, `-`, `_`; unique), which names the file and therefore starts the page URL (`/resources/<local_id>-<slug>/`); the page URL is the record's `@id`; the described material's own DOI/handle goes in `identifier` and `resource_url` (the front-matter field is `resource_url`, not `url`, because Jekyll reserves `url` for a document's own page path) |
 | Build | GitHub Actions (Jekyll 4.x, no third-party plugins needed, CI validation) deploying to GitHub Pages |
 | Search | Client-side JS facets (lifecycle stage, type, research area, expertise level, audience, access cost, obsolete toggle; configurable in `_config.yml`) plus keyword box over the embedded JSON-LD; `<noscript>` fallback lists all published resources grouped by lifecycle stage |
 | Authoring | GitHub Issue form with dropdowns generated from the vocabulary files; an Action turns the issue into a Markdown file and opens a PR |
@@ -51,6 +51,7 @@ Each resource is one Markdown file in a `_resources` collection; its YAML front 
 
 | Field | Type | Required | RDA element | Notes |
 | --- | --- | --- | --- | --- |
+| `local_id` | string, `[A-Za-z0-9._-]+`, ≤ 64 chars | Yes | — | Author-assigned catalogue identifier, unique case-insensitively. The file is named `<local_id>.md` or `<local_id>-<slug>.md`, so the identifier starts the page URL |
 | `title` | string ≤ 1000 chars | Yes | Title | Transcribed from the resource |
 | `description` | string ≤ 2000 chars | Yes | Abstract / Description | Your "descriptive context" field. Longer narrative goes in the Markdown body, which renders on the page but is not emitted as metadata |
 | `resource_url` | URL | Yes | URL to Resource | Landing page or persistent identifier of the external material. Named `resource_url` because Jekyll reserves `url` on every document for its own page path |
@@ -69,16 +70,17 @@ Each resource is one Markdown file in a `_resources` collection; its YAML front 
 | `lifecycle_stages` | list of term ids, ≥ 1 | Yes | — (GeoFAIR facet) | Multi-valued |
 | `research_areas` | list of term ids, ≥ 1 | Yes | — (GeoFAIR facet) | Multi-valued |
 | `status` | one term id: `draft`, `in-review`, `published`, `obsolete` | Yes | — (GeoFAIR facet) | Issue form sets `in-review`; maintainer sets `published` at merge |
-| `superseded_by` | URL or resource slug | No | — | Only meaningful when `status: obsolete` |
+| `superseded_by` | URL or another resource's `local_id` | No | — | Only meaningful when `status: obsolete` |
 | `testimonials` | list of `{provider: {name, type, affiliation, url}, text, date}` | No | — | `type` is `Person` or `Organization` |
 | `identifier` | URL | No | — | Explicit DOI/handle when `resource_url` is a plain landing page |
 | `image` | path or URL | No | — | Optional thumbnail for cards |
 | `date_added` | ISO 8601 date | No | — | Catalogue bookkeeping; set by the Issue-form Action |
 
-A complete example (the repository ships six Ocean samples in the same shape), `_resources/usgs-metadata-wizard-tutorial.md`:
+A complete example (the repository ships six Ocean samples in the same shape), `_resources/usgs-mdwiz-2025-metadata-wizard-tutorial.md`, published at `/resources/usgs-mdwiz-2025-metadata-wizard-tutorial/`:
 
 ```yaml
 ---
+local_id: usgs-mdwiz-2025
 title: "Writing FGDC/ISO metadata with the USGS Metadata Wizard"
 description: "A 45-minute hands-on tutorial that walks through describing a geospatial dataset with the Metadata Wizard, validating the record, and exporting it for a repository submission."
 resource_url: https://example.org/metadata-wizard-tutorial
@@ -234,7 +236,7 @@ Every resource page emits one `schema:LearningResource` object (the type Biosche
 | `title` | `name` | Text |
 | `description` | `description` | Text |
 | `resource_url` | `url` | URL of the external material |
-| `identifier` (or `resource_url` when `url_type` is DOI/Handle/ARK) | `identifier`, `sameAs` | The resolvable PID URL as a plain string in both properties (simpler than a `PropertyValue`, and what the validators accept) |
+| `local_id`; `identifier` (or `resource_url` when `url_type` is DOI/Handle/ARK) | `identifier`, `sameAs` | `identifier` is an array: a `PropertyValue {propertyID: "geofair-local-id", value}` for the catalogue identifier, plus the resolvable PID URL when there is one; `sameAs` carries the PID URL |
 | `resource_type` | `learningResourceType` | `DefinedTerm {name, termCode, description, inDefinedTermSet, broadMatch}` |
 | `object_types[]` | `additionalType` | Array of URIs, one per digital object type: the COAR Resource Types 3.2 concept URI, else the DCMI Type URI, else the DataCite value as text. Derived from the resource type's `close_match` when the field is omitted |
 | `license` | `license` | URL (SPDX canonical) |
@@ -268,7 +270,7 @@ The JSON-LD for the example resource:
   "name": "Writing FGDC/ISO metadata with the USGS Metadata Wizard",
   "description": "A 45-minute hands-on tutorial ...",
   "url": "https://example.org/metadata-wizard-tutorial",
-  "identifier": "https://doi.org/10.5066/EXAMPLE",
+  "identifier": [{"@type": "PropertyValue", "propertyID": "geofair-local-id", "name": "GeoFAIR local identifier", "value": "usgs-mdwiz-2025"}, "https://doi.org/10.5066/EXAMPLE"],
   "sameAs": "https://doi.org/10.5066/EXAMPLE",
   "learningResourceType": {
     "@type": "DefinedTerm", "name": "Tutorial", "termCode": "tutorial",
@@ -407,7 +409,8 @@ Validation steps run on every PR and again before deploy:
 | --- | --- | --- |
 | Front matter against `schema/resource.schema.json` | `jsonschema` (Python) via `validate_resources.py` | Missing required field, wrong type, description over 2000 characters, bad date |
 | Vocabulary ids exist | same script, reads `_data/vocab/*.yml` and each file's `field` key | Any `lifecycle_stages`, `research_areas`, `resource_type`, `status`, `audience`, `expertise_level` or `access_cost` value not in its file |
-| Slug and filename | same script | Filename not kebab-case, duplicate titles |
+| Local identifier | same script | `local_id` missing, not a quoted string, characters outside `[A-Za-z0-9._-]`, duplicate (exact or differing only by case), or a filename that is not `<local_id>.md` / `<local_id>-<slug>.md` |
+| Filename and titles | same script | Filename with characters outside `[A-Za-z0-9._-]`, duplicate titles |
 | External `resource_url` resolves | `requests` HEAD (GET fallback on 403/405), run on `main` only | Never fails the build; prints a warning per unreachable URL |
 | License id known | `_data/licenses.yml` lookup | Unknown SPDX id |
 | Built JSON-LD parses and conforms | `validate_jsonld.py` (Python; optional `pyshacl` with `geofair-shapes.ttl` or the Bioschemas shapes) | Any block fails to parse, a `LearningResource` lacks a required property, a `DefinedTerm` points off-site, or the index contains a non-indexed status |
@@ -454,6 +457,7 @@ Sequencing notes. Phase 2 can start in parallel with Phase 1 once the schema tab
 | 2026-11-14 | Every badge has a hover tooltip with the term's definition | Owner request; definitions already existed in the vocabularies |
 | 2026-11-14 | `GETTING-STARTED.md` added; planning documents moved to `docs/` and excluded from the build | Two uploads lost hidden files and one overwrote config; the guide documents the setup steps. Markdown without front matter would otherwise be published as raw text |
 | 2026-11-14 | House rule: variables assigned inside a Liquid include must not reuse names from the calling layout | An include's `cost` overwrote the layout's `cost`, blanking a badge |
+| 2026-11-17 | Author-assigned `local_id` required on every resource; the file is named after it so the identifier starts the URL (optional title slug after it); emitted as a `PropertyValue` in `identifier`; `superseded_by` now references a `local_id`; CI rejects missing, malformed, duplicate (case-insensitive) ids and mismatched filenames | Owner request: stable, author-controlled identifiers independent of titles |
 | 2026-11-15 | Digital object type added as an eighth vocabulary (`object_type.yml`: DataCite 4.7 `resourceTypeGeneral` ids with COAR 3.2 and DCMI crosswalks), multi-valued, emitted as `schema:additionalType` COAR/DCMI URIs, with a facet, badges and an Issue-form field; replaces the earlier `additionalType` that echoed the resource type's DataCite mapping | Owner request: tag resources by what they are (data, software, guide…) independently of the learning genre |
 
 ## Sources

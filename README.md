@@ -48,6 +48,8 @@ scripts/                    validators, Issue-form generator, issue-to-resource 
 
 Contributors use the **Suggest a resource** Issue form; the workflow turns it into a pull request with `status: in-review`. Maintainers review, set `status: published`, and merge. Maintainers can also add a file to `_resources/` directly; `CONTRIBUTING.md` has the field reference.
 
+Every resource carries an author-assigned `local_id` (letters, digits, `.`, `-`, `_`), unique across the catalogue; the file is named `<local_id>.md` or `<local_id>-<slug>.md`, so the identifier is the start of the page URL. CI rejects a missing, malformed or duplicate identifier and a filename that does not start with it.
+
 Status rules: `draft` and `in-review` pages are built (so reviewers can preview them) but carry `noindex` and never enter the search index; `published` entries are listed; `obsolete` entries are indexed but hidden on the search page until the visitor ticks *Include obsolete*.
 
 ## Vocabularies

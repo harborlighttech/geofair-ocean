@@ -32,6 +32,7 @@ def new_resource_form(vocabs: dict, licenses: dict, cfg: dict) -> dict:
         "labels": ["new-resource"],
         "body": [
             {"type": "markdown", "attributes": {"value": "Thanks for suggesting a resource. Fields marked required must be filled; everything else helps people find and judge the resource. A maintainer will review and may edit before publishing."}},
+            {"type": "input", "id": "local_id", "attributes": {"label": "Local identifier", "description": "A short identifier you assign, unique in this catalogue. Letters, digits, dot, dash and underscore only (e.g. argo-python-2025 or NOAA.CF-guide_v2). It becomes part of the resource's URL.", "placeholder": "my-resource-id"}, "validations": {"required": True}},
             {"type": "input", "id": "title", "attributes": {"label": "Title", "description": "As it appears on the resource itself."}, "validations": {"required": True}},
             {"type": "input", "id": "resource_url", "attributes": {"label": "URL", "description": "Landing page or persistent identifier (DOI/handle preferred).", "placeholder": "https://"}, "validations": {"required": True}},
             {"type": "textarea", "id": "description", "attributes": {"label": "Description", "description": "What it covers, how long it takes, what the learner needs first. 40–2000 characters, plain text."}, "validations": {"required": True}},
@@ -61,7 +62,7 @@ def update_resource_form(cfg: dict) -> dict:
         "title": "[update] <resource title or slug>",
         "labels": ["update-resource"],
         "body": [
-            {"type": "input", "id": "slug", "attributes": {"label": "Resource slug", "description": "The last part of the resource page's URL, e.g. working-with-argo-float-profiles."}, "validations": {"required": True}},
+            {"type": "input", "id": "local_id", "attributes": {"label": "Local identifier", "description": "Shown as 'Catalogue identifier' on the resource page and at the start of its URL."}, "validations": {"required": True}},
             {"type": "dropdown", "id": "change", "attributes": {"label": "What changed?", "options": ["Correction to the description or metadata", "New version or new URL", "Resource is obsolete", "Add a testimonial", "Other"]}, "validations": {"required": True}},
             {"type": "textarea", "id": "details", "attributes": {"label": "Details", "description": "Say exactly what should change. For obsolete resources, name the replacement if there is one."}, "validations": {"required": True}},
         ],

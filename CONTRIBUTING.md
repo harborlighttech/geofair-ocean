@@ -6,12 +6,13 @@ Use the **Suggest a resource** Issue form in this repository. A workflow convert
 
 ## Adding or editing a resource file (maintainers)
 
-Resources are Markdown files in `_resources/`, named in kebab-case (`writing-cf-compliant-netcdf.md`). The front matter is the record; the Markdown body is optional notes shown on the page.
+Resources are Markdown files in `_resources/`. Every resource has an author-assigned **local identifier** (`local_id`: letters, digits, `.`, `-`, `_`; unique in the catalogue, case-insensitively), and the file is named after it — `<local_id>.md` or `<local_id>-<slug>.md` — which makes the identifier the start of the resource's URL (`/resources/<local_id>-<slug>/`). The front matter is the record; the Markdown body is optional notes shown on the page.
 
 ### Field reference
 
 | Field | Required | Type | RDA element | Notes |
 | --- | --- | --- | --- | --- |
+| `local_id` | yes | `[A-Za-z0-9._-]+`, ≤ 64 chars | — | author-assigned, unique; filename must start with it |
 | `title` | yes | string ≤ 1000 | Title | as on the resource |
 | `description` | yes | string 40–2000 | Abstract / Description | plain text |
 | `resource_url` | yes | URL | URL to Resource | landing page or PID |
@@ -31,7 +32,7 @@ Resources are Markdown files in `_resources/`, named in kebab-case (`writing-cf-
 | `lifecycle_stages[]` | yes | ids from `_data/vocab/lifecycle_stage.yml` | — | one or more |
 | `research_areas[]` | yes | ids from `_data/vocab/research_area.yml` | — | one or more |
 | `status` | yes | `draft` `in-review` `published` `obsolete` | — | |
-| `superseded_by` | no | slug or URL | — | for obsolete entries |
+| `superseded_by` | no | `local_id` of another resource, or URL | — | for obsolete entries |
 | `testimonials[]` | no | `{provider: {name, type, affiliation, url}, text, date}` | — | emitted as `schema:Review` |
 | `image` | no | path or URL | — | optional thumbnail |
 | `date_added` | no | `YYYY-MM-DD` | — | catalogue bookkeeping |
