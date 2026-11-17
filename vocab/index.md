@@ -1,5 +1,6 @@
 ---
 title: Vocabularies
+main_class: page-prose
 permalink: /vocab/
 ---
 # Controlled vocabularies

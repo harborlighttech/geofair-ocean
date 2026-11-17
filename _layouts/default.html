@@ -12,11 +12,19 @@
   <meta name="robots" content="noindex">
   {%- endif %}
   <link rel="canonical" href="{{ page.url | absolute_url }}">
+  {%- if site.fonts.google_fonts_url and site.fonts.google_fonts_url != "" %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{{ site.fonts.google_fonts_url }}">
+  {%- endif %}
   <style>
     :root {
       {%- for c in site.theme_colors %}
       --c-{{ c[0] | replace: '_', '-' }}: {{ c[1] }};
       {%- endfor %}
+      --f-display: {{ site.fonts.display | default: "'Helvetica Neue', Arial, sans-serif" }};
+      --f-body: {{ site.fonts.body | default: "Georgia, serif" }};
+      --logo-height: {{ site.logo_height | default: 38 }}px;
     }
   </style>
   <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">

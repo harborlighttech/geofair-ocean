@@ -16,9 +16,13 @@ This repository is the **Ocean** instance of the GeoFAIR Resource Hub template. 
 6. **Replace the sample resources** in `_resources/` (all start with `sample-`) with real ones, then push. The first push to `main` builds and deploys.
 7. Review the vocabularies in `_data/vocab/` (see below) and fill in the `same_as` links marked `TODO`.
 
-## Colour scheme
+## Look and feel: colours, fonts, logo
 
-All colours live in `theme_colors:` in `_config.yml` and are emitted as CSS custom properties (`--c-primary`, `--c-accent`, …) in every page's `<head>`. `assets/css/site.css` only ever references those variables, so a domain restyles the site without touching CSS. Keep text/background contrast at 4.5:1 or better.
+The visual language follows the AGU *Impactful Datasets* site: Montserrat for headings, labels, navigation and buttons; Lora for running prose; AGU brand colours (#244C5A primary, #007DBA secondary) on white; hairline rules and 6 px cards. All of it is configured in `_config.yml`:
+
+- `theme_colors:` — each value becomes a CSS custom property (`--c-primary`, `--c-accent`, …) in every page's `<head>`; `assets/css/site.css` only ever references those variables, so a domain restyles the site without touching CSS. Keep text/background contrast at 4.5:1 or better.
+- `fonts:` — `display` and `body` font stacks (emitted as `--f-display` / `--f-body`) and `google_fonts_url`, which loads the web fonts. Set `google_fonts_url: ""` to avoid the external request; the stacks then fall back to system fonts.
+- `logo:` — optional. A path inside the site (`assets/img/logo.png`) or an absolute `https://` URL. When set, the image is shown in the header immediately before the site title at `logo_height` px (width scales); `logo_alt` is its accessible name. When empty, nothing is rendered in that space.
 
 ## Repository layout
 

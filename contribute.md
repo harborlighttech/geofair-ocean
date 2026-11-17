@@ -1,5 +1,6 @@
 ---
 title: Contribute
+main_class: page-prose
 permalink: /contribute/
 ---
 # Contribute a resource
