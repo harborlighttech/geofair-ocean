@@ -87,6 +87,8 @@ layout: default
         <dt>Digital object type</dt>
         <dd>{% for ot in ot_terms %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?object={{ ot.id }}" title="{{ ot.definition | escape }}">{{ ot.label }}</a> {% endfor %}</dd>
         {%- endif %}
+        <dt>Status</dt>
+        <dd>{{ st.label | default: r.status }}</dd>
         <dt>Lifecycle stage</dt>
         <dd>{% for sid in r.lifecycle_stages %}{% assign t = site.data.vocab.lifecycle_stage.terms | where: "id", sid | first %}<a class="chip chip--link" href="{{ '/resources/' | relative_url }}?stage={{ sid }}" title="{{ t.definition | escape }}">{{ t.label | default: sid }}</a> {% endfor %}</dd>
         <dt>Research area</dt>
@@ -109,8 +111,6 @@ layout: default
         <dt>Keywords</dt>
         <dd>{{ r.keywords | join: ", " }}</dd>
         {%- endif %}
-        <dt>Status</dt>
-        <dd>{{ st.label | default: r.status }}</dd>
         {%- if r.date_added %}
         <dt>Added to catalogue</dt>
         <dd><time datetime="{{ r.date_added | date: '%Y-%m-%d' }}">{{ r.date_added | date: "%-d %B %Y" }}</time></dd>
