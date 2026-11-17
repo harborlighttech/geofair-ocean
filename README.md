@@ -77,6 +77,7 @@ bundle install
 bundle exec jekyll serve --livereload      # http://localhost:4000/<baseurl>/
 pip install -r requirements.txt
 python scripts/validate_resources.py       # front matter, vocab ids, licences
+python scripts/test_validation.py          # validator self-test against _resources/_test-*.md fixtures
 python scripts/validate_jsonld.py          # after a build: parses and checks every JSON-LD block
 python scripts/validate_jsonld.py --shacl  # optional; needs pyshacl and rdflib
 ```
