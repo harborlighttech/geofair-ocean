@@ -23,10 +23,16 @@ Jekyll::Hooks.register :site, :post_read do |site|
     next if local_id.empty?
 
     doc.data["permalink"] = "/resources/#{local_id}/"
-    next unless doc.data["slug"].to_s.empty?
 
+    # Jekyll pre-fills data["slug"] with the basename, so "not set" means empty OR basename.
     stem = File.basename(doc.relative_path, ".*")
-    doc.data["slug"] = stem.sub(/\A#{Regexp.escape(local_id)}_/, "") if stem.start_with?("#{local_id}_")
+    next unless doc.data["slug"].to_s.empty? || doc.data["slug"] == stem
+
+    doc.data["slug"] = if stem.start_with?("#{local_id}_")
+                         stem.sub(/\A#{Regexp.escape(local_id)}_/, "")
+                       else
+                         Jekyll::Utils.slugify(doc.data["title"].to_s)
+                       end
   end
 end
 
