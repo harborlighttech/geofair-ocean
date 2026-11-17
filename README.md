@@ -52,7 +52,7 @@ scripts/                    validators, Issue-form generator, issue-to-resource 
 
 Contributors use the **Suggest a resource** Issue form; the workflow turns it into a pull request with `status: in-review`. Maintainers review, set `status: published`, and merge. Maintainers can also add a file to `_resources/` directly; `CONTRIBUTING.md` has the field reference.
 
-Every resource carries an author-assigned `local_id` (letters, digits, `.`, `-`, `_`), unique across the catalogue; the file is named `<local_id>.md` and the **canonical** page URL is `/resources/<local_id>/`. Every link on the site uses the readable form `/resources/<local_id>/<slug>/` (slug from the optional `slug` field, otherwise the title), which `_plugins/resource_alias.rb` builds as a full copy of the page declaring the canonical URL in `<link rel="canonical">` and the JSON-LD `@id`. Because the identifier is what matters, a wrong or misspelled slug still resolves: `404.html` redirects any `/resources/<local_id>/<anything>` to `/resources/<local_id>/`. The plugin runs in the Actions build and in local `jekyll build`, but not under the GitHub Pages default builder (which runs `--safe`). CI rejects a missing, malformed or duplicate identifier, a filename that does not match it, and a build missing any alias page.
+Every resource carries an author-assigned `local_id` (letters, digits, `.`, `-`, `_`), unique across the catalogue; the file is named `<local_id>_<slug>.md` and the **canonical** page URL is `/resources/<local_id>/` (set from the front matter by `_plugins/resource_alias.rb`, not from the filename). Every link on the site uses the readable form `/resources/<local_id>/<slug>/` (slug from the filename, or an explicit `slug` field), which `_plugins/resource_alias.rb` builds as a full copy of the page declaring the canonical URL in `<link rel="canonical">` and the JSON-LD `@id`. Because the identifier is what matters, a wrong or misspelled slug still resolves: `404.html` redirects any `/resources/<local_id>/<anything>` to `/resources/<local_id>/`. The plugin runs in the Actions build and in local `jekyll build`, but not under the GitHub Pages default builder (which runs `--safe`). CI rejects a missing, malformed or duplicate identifier, a filename that does not match it, and a build missing any alias page.
 
 A resource file whose name starts with `_` (e.g. `_resources/_wip-id.md`) is skipped by the build entirely; `_resources/_template.md` is a skipped template to copy from.
 
@@ -81,6 +81,7 @@ bundle install
 bundle exec jekyll serve --livereload      # http://localhost:4000/<baseurl>/
 pip install -r requirements.txt
 python scripts/validate_resources.py       # front matter, vocab ids, licences
+python scripts/test_validation.py          # validator self-test against _resources/_test-*.md fixtures
 python scripts/validate_jsonld.py          # after a build: parses and checks every JSON-LD block
 python scripts/validate_jsonld.py --shacl  # optional; needs pyshacl and rdflib
 ```

@@ -21,7 +21,7 @@ import pathlib
 import re
 import sys
 
-from common import RESOURCES_DIR, ROOT, is_skipped, load_config, split_front_matter
+from common import RESOURCES_DIR, ROOT, is_skipped, load_config, resource_slug, split_front_matter
 
 SCRIPT_RE = re.compile(r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', re.S | re.I)
 REQUIRED_LR = ["@id", "name", "description", "url", "learningResourceType", "license", "dateModified",
@@ -117,18 +117,23 @@ def main() -> int:
     def jekyll_slugify(text: str) -> str:
         return re.sub(r"[^\w]+|_+", "-", str(text).lower()).strip("-")
 
+    sources = []
     for src in sorted(RESOURCES_DIR.glob("*.md")):
         try:
             fm, _ = split_front_matter(src.read_text(encoding="utf-8"))
         except Exception:  # noqa: BLE001
             continue
+        sources.append((src, fm))
+    live_ids = {str(fm.get("local_id", "")) for src, fm in sources if not is_skipped(src)}
+    for src, fm in sources:
         lid = str(fm.get("local_id", ""))
         if is_skipped(src):
-            # Underscore-prefixed files must stay out of the build entirely.
-            if lid and (site_dir / "resources" / lid / "index.html").exists():
+            # Underscore-prefixed files must stay out of the build entirely. A page may
+            # still exist for the id if a live resource uses the same one.
+            if lid and lid not in live_ids and (site_dir / "resources" / lid / "index.html").exists():
                 errors.append(f"{src.name}: starts with '_' but resources/{lid}/ was built; Jekyll should skip it")
             continue
-        slug = str(fm.get("slug") or jekyll_slugify(fm.get("title", "")))
+        slug = resource_slug(src, fm)
         if not lid or not slug:
             continue
         canonical = site_dir / "resources" / lid / "index.html"

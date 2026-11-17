@@ -95,6 +95,18 @@ def guess_url_type(url: str) -> str:
     return "URL"
 
 
+def resource_slug(path: pathlib.Path, fm: dict) -> str:
+    """The readable slug of a resource: front matter `slug`, else the filename part after
+    '<local_id>_', else the slugified title. Mirrors _plugins/resource_alias.rb."""
+    if fm.get("slug"):
+        return str(fm["slug"])
+    lid = str(fm.get("local_id", ""))
+    stem = path.stem.lstrip("_.")
+    if lid and stem.startswith(lid + "_") and len(stem) > len(lid) + 1:
+        return stem[len(lid) + 1:]
+    return re.sub(r"[^\w]+|_+", "-", str(fm.get("title", "")).lower()).strip("-")
+
+
 def dump_front_matter(data: dict, body: str = "") -> str:
     fm = yaml.safe_dump(data, sort_keys=False, allow_unicode=True, width=100, default_flow_style=False)
     return f"---\n{fm}---\n{body}"
