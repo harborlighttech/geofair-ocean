@@ -28,6 +28,8 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Front matter, vocabulary ids, licences
         run: python scripts/validate_resources.py
+      - name: Validator self-test against the _test-* fixtures
+        run: python scripts/test_validation.py
       - name: Issue forms in sync with vocabularies
         run: python scripts/build_issue_form.py --check
       - name: External links (main only; warnings never fail)
