@@ -75,6 +75,47 @@ body:
   validations:
     required: true
 - type: checkboxes
+  id: object_types
+  attributes:
+    label: Digital object types
+    description: Tick every kind of digital object the resource is (DataCite resource types). A tutorial with a notebook and
+      sample data is both Computational notebook and Dataset.
+    options:
+    - label: Audiovisual [audiovisual]
+    - label: Award [award]
+    - label: Book [book]
+    - label: Book chapter [book-chapter]
+    - label: Collection [collection]
+    - label: Computational notebook [computational-notebook]
+    - label: Conference paper [conference-paper]
+    - label: Conference proceeding [conference-proceeding]
+    - label: Data paper [data-paper]
+    - label: Dataset [dataset]
+    - label: Dissertation [dissertation]
+    - label: Event [event]
+    - label: Image [image]
+    - label: Instrument [instrument]
+    - label: Interactive resource [interactive-resource]
+    - label: Journal [journal]
+    - label: Journal article [journal-article]
+    - label: Model [model]
+    - label: Output management plan [output-management-plan]
+    - label: Peer review [peer-review]
+    - label: Physical object [physical-object]
+    - label: Poster [poster]
+    - label: Preprint [preprint]
+    - label: Presentation [presentation]
+    - label: Project [project]
+    - label: Report [report]
+    - label: Service [service]
+    - label: Software [software]
+    - label: Sound [sound]
+    - label: Standard [standard]
+    - label: Study registration [study-registration]
+    - label: Text [text]
+    - label: Workflow [workflow]
+    - label: Other [other]
+- type: checkboxes
   id: lifecycle_stages
   attributes:
     label: Lifecycle stages

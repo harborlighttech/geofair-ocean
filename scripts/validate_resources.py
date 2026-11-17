@@ -39,6 +39,22 @@ def main() -> int:
 
     errors: list[str] = []
     warnings: list[str] = []
+
+    # Vocabulary self-checks: ids unique within a file; object-type emitted values unique.
+    for vkey, v in vocabs.items():
+        ids = [t["id"] for t in v["terms"]]
+        for dup in {i for i in ids if ids.count(i) > 1}:
+            errors.append(f"_data/vocab/{vkey}.yml: duplicate term id '{dup}'")
+    if "object_type" in vocabs:
+        seen: dict[str, str] = {}
+        for t in vocabs["object_type"]["terms"]:
+            val = t.get("coar") or t.get("dcmi") or t.get("datacite")
+            if not val:
+                errors.append(f"_data/vocab/object_type.yml: '{t['id']}' has no coar, dcmi or datacite value to emit")
+            elif val in seen:
+                errors.append(f"_data/vocab/object_type.yml: '{t['id']}' and '{seen[val]}' both emit {val}; additionalType values must be unique per term")
+            else:
+                seen[val] = t["id"]
     titles: dict[str, str] = {}
     records: list[tuple[str, dict]] = []
 
@@ -77,6 +93,8 @@ def main() -> int:
         sup = data.get("superseded_by")
         if sup and "://" not in sup and sup not in all_slugs:
             errors.append(f"{name}: superseded_by '{sup}' is not a resource slug in _resources/")
+        if not data.get("object_types"):
+            warnings.append(f"{name}: no object_types; the build will derive one from resource_type")
         if data.get("status") == "obsolete" and not sup:
             warnings.append(f"{name}: obsolete without superseded_by")
 

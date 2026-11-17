@@ -50,6 +50,7 @@
     "expertise_level": {"type": "string", "enum": ["beginner", "intermediate", "advanced"], "$comment": "RDA 14 Expertise Level"},
     "lifecycle_stages": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"}, "$comment": "GeoFAIR facet; ids from _data/vocab/lifecycle_stage.yml"},
     "research_areas": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"}, "$comment": "GeoFAIR facet; ids from _data/vocab/research_area.yml"},
+    "object_types": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"}, "$comment": "Digital object type(s); ids from _data/vocab/object_type.yml (DataCite resourceTypeGeneral). Derived from resource_type when omitted"},
     "status": {"type": "string", "enum": ["draft", "in-review", "published", "obsolete"], "$comment": "GeoFAIR facet; ids from _data/vocab/status.yml"},
     "superseded_by": {"type": "string", "minLength": 1, "$comment": "Slug of another resource, or an absolute URL; meaningful when status is obsolete"},
     "testimonials": {

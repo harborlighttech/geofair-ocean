@@ -1,0 +1,23 @@
+{%- comment -%}
+Sets the variable `ot_ids` (deliberately, in the caller's scope) to the list of
+object-type term ids for include.resource: the resource's own `object_types`, or,
+when absent, the object type whose DataCite value equals the resource type's
+`close_match`. Also sets `ot_terms` to the matching term objects.
+{%- endcomment -%}
+{%- assign ot_res = include.resource -%}
+{%- assign ot_ids = ot_res.object_types -%}
+{%- assign ot_has = false -%}
+{%- if ot_ids %}{% if ot_ids.size > 0 %}{% assign ot_has = true %}{% endif %}{% endif -%}
+{%- unless ot_has -%}
+  {%- assign ot_rtype = site.data.vocab.resource_type.terms | where: "id", ot_res.resource_type | first -%}
+  {%- assign ot_ids = "" | split: "," -%}
+  {%- if ot_rtype and ot_rtype.close_match -%}
+    {%- assign ot_dflt = site.data.vocab.object_type.terms | where: "datacite", ot_rtype.close_match | first -%}
+    {%- if ot_dflt %}{% assign ot_ids = ot_ids | push: ot_dflt.id %}{% endif -%}
+  {%- endif -%}
+{%- endunless -%}
+{%- assign ot_terms = "" | split: "," -%}
+{%- for ot_id in ot_ids -%}
+  {%- assign ot_t = site.data.vocab.object_type.terms | where: "id", ot_id | first -%}
+  {%- if ot_t %}{% assign ot_terms = ot_terms | push: ot_t %}{% endif -%}
+{%- endfor -%}

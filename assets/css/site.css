@@ -80,6 +80,7 @@ main.container { padding: 1.5rem 0 3rem; min-height: 60vh; }
 .chip { display: inline-block; font-size: 0.78rem; line-height: 1.5; padding: 0.05em 0.6em; border-radius: 999px; border: 1px solid var(--c-border); background: var(--c-surface); color: var(--c-text); white-space: nowrap; }
 .chip--type { background: var(--c-primary); color: var(--c-primary-text); border-color: var(--c-primary); }
 .chip--free { border-color: var(--c-success); color: var(--c-success); background: transparent; }
+.chip--object { border-color: var(--c-primary); color: var(--c-primary); background: transparent; }
 .chip--warning { border-color: var(--c-warning); color: var(--c-warning); background: transparent; }
 .chip--stage { border-color: transparent; }
 .chip--area { border-color: transparent; }

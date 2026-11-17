@@ -22,6 +22,7 @@ learning_outcomes:
   - "Package the grid and its provenance for repository deposit"
 access_cost: "no"
 expertise_level: advanced
+object_types: [computational-notebook, software, dataset]
 lifecycle_stages: [process, describe, preserve]
 research_areas: [bathymetry-seafloor-topography, marine-geophysics]
 status: published

@@ -23,7 +23,7 @@ ID_RE = re.compile(r"\[([a-z0-9-]+)\]\s*$")
 LABELS = {
     "Title": "title", "URL": "resource_url", "Description": "description", "Resource type": "resource_type",
     "Licence": "license", "Version date": "version_date", "Lifecycle stages": "lifecycle_stages",
-    "Research areas": "research_areas", "Audience": "audience", "Expertise level": "expertise_level",
+    "Research areas": "research_areas", "Digital object types": "object_types", "Audience": "audience", "Expertise level": "expertise_level",
     "Access cost": "access_cost", "Primary language": "language", "Authors": "authors",
     "Learning outcomes": "learning_outcomes", "Keywords": "keywords", "Testimonials": "testimonials",
     "Notes for the page": "notes",
@@ -135,6 +135,9 @@ def main() -> int:
     lvl = term_id(f.get("expertise_level", "")) or (f.get("expertise_level", "") or "").strip().lower()
     if lvl in {t["id"] for t in vocabs["expertise_level"]["terms"]}:
         data["expertise_level"] = lvl
+    objs = checked(f.get("object_types", ""))
+    if objs:
+        data["object_types"] = objs
     data["lifecycle_stages"] = checked(f.get("lifecycle_stages", ""))
     data["research_areas"] = checked(f.get("research_areas", ""))
     data["status"] = "in-review"

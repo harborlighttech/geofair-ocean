@@ -1,0 +1,241 @@
+# GeoFAIR digital object type vocabulary (multi-valued).
+# Ids and definitions follow the DataCite Metadata Schema 4.7 resourceTypeGeneral
+# controlled list (34 values; 4.7 added Poster and Presentation). Each term records:
+#   datacite  - the exact resourceTypeGeneral value
+#   coar      - the COAR Resource Types 3.2 concept URI (PURL), when one exists
+#   dcmi      - the DCMI Type class DataCite suggests as its Dublin Core mapping
+# Emitted in the JSON-LD as schema:additionalType, one value per term: the COAR
+# URI when present, else the DCMI URI, else the DataCite value as text. The emitted
+# value must be unique per term (CI checks), which is why ComputationalNotebook
+# carries COAR software only as a broad_match and emits its DCMI class.
+# A resource may carry several object types (e.g. a tutorial that is a
+# computational notebook plus a dataset). When `object_types` is omitted the build
+# derives one from the resource type's `close_match`.
+id: object-type
+name: GeoFAIR Digital Object Type
+description: The kind of digital object the learning resource is, following the DataCite resourceTypeGeneral list, with COAR and DCMI equivalents.
+field: object_types
+cardinality: many
+terms:
+  - id: audiovisual
+    label: Audiovisual
+    definition: A moving visual sequence, which may include sound, such as a film or video.
+    datacite: Audiovisual
+    coar: http://purl.org/coar/resource_type/c_8a7e
+    dcmi: http://purl.org/dc/dcmitype/MovingImage
+    same_as: [http://purl.org/coar/resource_type/c_8a7e, http://purl.org/dc/dcmitype/MovingImage]
+  - id: award
+    label: Award
+    definition: Support given to people or organisations for research, study or training, such as a grant or scholarship.
+    datacite: Award
+    same_as: []
+  - id: book
+    label: Book
+    definition: A bound, multi-page work of writing or images.
+    datacite: Book
+    coar: http://purl.org/coar/resource_type/c_2f33
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_2f33]
+  - id: book-chapter
+    label: Book chapter
+    definition: A major division of a book.
+    datacite: BookChapter
+    coar: http://purl.org/coar/resource_type/c_3248
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_3248]
+  - id: collection
+    label: Collection
+    definition: A group of resources, of one or mixed types, described as a group with its parts also described separately.
+    datacite: Collection
+    dcmi: http://purl.org/dc/dcmitype/Collection
+    same_as: [http://purl.org/dc/dcmitype/Collection]
+  - id: computational-notebook
+    label: Computational notebook
+    definition: A virtual notebook environment used for literate programming (Jupyter, R Markdown, Quarto).
+    datacite: ComputationalNotebook
+    broad_match: http://purl.org/coar/resource_type/c_5ce6
+    dcmi: http://purl.org/dc/dcmitype/InteractiveResource
+    same_as: [http://purl.org/dc/dcmitype/InteractiveResource]
+  - id: conference-paper
+    label: Conference paper
+    definition: An article written with the aim of being accepted at a conference.
+    datacite: ConferencePaper
+    coar: http://purl.org/coar/resource_type/c_5794
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_5794]
+  - id: conference-proceeding
+    label: Conference proceeding
+    definition: A collection of academic papers published from an academic conference.
+    datacite: ConferenceProceeding
+    coar: http://purl.org/coar/resource_type/c_f744
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_f744]
+  - id: data-paper
+    label: Data paper
+    definition: A factual publication that identifies and describes specific data to make it easier to find and reuse.
+    datacite: DataPaper
+    coar: http://purl.org/coar/resource_type/c_beb9
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_beb9]
+  - id: dataset
+    label: Dataset
+    definition: Data organised in a defined structure.
+    datacite: Dataset
+    coar: http://purl.org/coar/resource_type/c_ddb1
+    dcmi: http://purl.org/dc/dcmitype/Dataset
+    same_as: [http://purl.org/coar/resource_type/c_ddb1, http://purl.org/dc/dcmitype/Dataset]
+  - id: dissertation
+    label: Dissertation
+    definition: An extended written essay or thesis, often by a doctoral candidate.
+    datacite: Dissertation
+    coar: http://purl.org/coar/resource_type/c_46ec
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_46ec]
+  - id: event
+    label: Event
+    definition: A non-persistent, time-based occurrence, such as a webcast or conference.
+    datacite: Event
+    dcmi: http://purl.org/dc/dcmitype/Event
+    same_as: [http://purl.org/dc/dcmitype/Event]
+  - id: image
+    label: Image
+    definition: A visual representation other than text, such as a drawing or photograph.
+    datacite: Image
+    coar: http://purl.org/coar/resource_type/c_c513
+    dcmi: http://purl.org/dc/dcmitype/Image
+    same_as: [http://purl.org/coar/resource_type/c_c513, http://purl.org/dc/dcmitype/Image]
+  - id: instrument
+    label: Instrument
+    definition: A physical device or tool used to obtain, measure or analyse data.
+    datacite: Instrument
+    same_as: []
+  - id: interactive-resource
+    label: Interactive resource
+    definition: A resource that requires user interaction to be understood or used, such as a training module or query portal.
+    datacite: InteractiveResource
+    coar: http://purl.org/coar/resource_type/c_e9a0
+    dcmi: http://purl.org/dc/dcmitype/InteractiveResource
+    same_as: [http://purl.org/coar/resource_type/c_e9a0, http://purl.org/dc/dcmitype/InteractiveResource]
+  - id: journal
+    label: Journal
+    definition: A scholarly publication of articles issued regularly.
+    datacite: Journal
+    coar: http://purl.org/coar/resource_type/c_0640
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_0640]
+  - id: journal-article
+    label: Journal article
+    definition: A written piece on a topic that forms a separate part of a journal.
+    datacite: JournalArticle
+    coar: http://purl.org/coar/resource_type/c_6501
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_6501]
+  - id: model
+    label: Model
+    definition: A conceptual, graphical, mathematical or visual representation of empirical objects, phenomena or processes.
+    datacite: Model
+    same_as: []
+  - id: output-management-plan
+    label: Output management plan
+    definition: A formal document describing how research outputs are handled during and after a project (a data management plan).
+    datacite: OutputManagementPlan
+    coar: http://purl.org/coar/resource_type/c_ab20
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_ab20]
+  - id: peer-review
+    label: Peer review
+    definition: An evaluation of scientific or professional work by others in the same field.
+    datacite: PeerReview
+    coar: http://purl.org/coar/resource_type/H9BQ-739P
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/H9BQ-739P]
+  - id: physical-object
+    label: Physical object
+    definition: A tangible object or substance, such as an artefact or specimen.
+    datacite: PhysicalObject
+    dcmi: http://purl.org/dc/dcmitype/PhysicalObject
+    same_as: [http://purl.org/dc/dcmitype/PhysicalObject]
+  - id: poster
+    label: Poster
+    definition: A visual summary of research presented at a conference or meeting.
+    datacite: Poster
+    coar: http://purl.org/coar/resource_type/c_6670
+    same_as: [http://purl.org/coar/resource_type/c_6670]
+  - id: preprint
+    label: Preprint
+    definition: A version of a scholarly paper shared before formal peer review and journal publication.
+    datacite: Preprint
+    coar: http://purl.org/coar/resource_type/c_816b
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_816b]
+  - id: presentation
+    label: Presentation
+    definition: Slides or other material prepared for delivery to an audience.
+    datacite: Presentation
+    coar: http://purl.org/coar/resource_type/R60J-J5BD
+    same_as: [http://purl.org/coar/resource_type/R60J-J5BD]
+  - id: project
+    label: Project
+    definition: A planned, often collaborative activity with an aim and allocated resources.
+    datacite: Project
+    same_as: []
+  - id: report
+    label: Report
+    definition: A document that organises information for a specific audience and purpose.
+    datacite: Report
+    coar: http://purl.org/coar/resource_type/c_93fc
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_93fc]
+  - id: service
+    label: Service
+    definition: An organised system of staff, equipment or other resources that supplies a function to end users.
+    datacite: Service
+    dcmi: http://purl.org/dc/dcmitype/Service
+    same_as: [http://purl.org/dc/dcmitype/Service]
+  - id: software
+    label: Software
+    definition: A computer program, in source or compiled form, that supports scholarly research; notebooks use Computational notebook.
+    datacite: Software
+    coar: http://purl.org/coar/resource_type/c_5ce6
+    dcmi: http://purl.org/dc/dcmitype/Software
+    same_as: [http://purl.org/coar/resource_type/c_5ce6, http://purl.org/dc/dcmitype/Software]
+  - id: sound
+    label: Sound
+    definition: A resource primarily meant to be heard, such as an audio recording or podcast.
+    datacite: Sound
+    coar: http://purl.org/coar/resource_type/c_18cc
+    dcmi: http://purl.org/dc/dcmitype/Sound
+    same_as: [http://purl.org/coar/resource_type/c_18cc, http://purl.org/dc/dcmitype/Sound]
+  - id: standard
+    label: Standard
+    definition: Something established by authority, custom or general consent as a model or point of reference.
+    datacite: Standard
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: []
+  - id: study-registration
+    label: Study registration
+    definition: A time-stamped description of a research plan, shared in a registry before the study is conducted.
+    datacite: StudyRegistration
+    coar: http://purl.org/coar/resource_type/YZ1N-ZFT9
+    coar_match: close
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: []
+  - id: text
+    label: Text
+    definition: A resource consisting mainly of words for reading that no other textual type covers, such as a guide or handbook.
+    datacite: Text
+    coar: http://purl.org/coar/resource_type/c_18cf
+    dcmi: http://purl.org/dc/dcmitype/Text
+    same_as: [http://purl.org/coar/resource_type/c_18cf, http://purl.org/dc/dcmitype/Text]
+  - id: workflow
+    label: Workflow
+    definition: A structured series of steps that can be executed to produce an outcome, supporting reproducible work.
+    datacite: Workflow
+    coar: http://purl.org/coar/resource_type/c_393c
+    same_as: [http://purl.org/coar/resource_type/c_393c]
+  - id: other
+    label: Other
+    definition: Used only when no other value fits.
+    datacite: Other
+    coar: http://purl.org/coar/resource_type/c_1843
+    same_as: [http://purl.org/coar/resource_type/c_1843]

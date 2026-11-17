@@ -21,6 +21,7 @@ learning_outcomes:
   - "Write global and variable attributes that pass the CF checker"
 access_cost: "no"
 expertise_level: intermediate
+object_types: [text]
 lifecycle_stages: [describe, process, share]
 research_areas: [research-data-management, ocean-observing-systems]
 status: published

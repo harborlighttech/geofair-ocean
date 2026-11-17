@@ -55,7 +55,8 @@ Each resource is one Markdown file in a `_resources` collection; its YAML front 
 | `description` | string ≤ 2000 chars | Yes | Abstract / Description | Your "descriptive context" field. Longer narrative goes in the Markdown body, which renders on the page but is not emitted as metadata |
 | `resource_url` | URL | Yes | URL to Resource | Landing page or persistent identifier of the external material. Named `resource_url` because Jekyll reserves `url` on every document for its own page path |
 | `url_type` | enum: `URL`, `DOI`, `Handle`, `ARK`, `PURL`, `URN` | No (auto-detected) | Resource URL Type | Subset of DataCite `relatedIdentifierType`; CI infers `DOI` from `doi.org`, `Handle` from `hdl.handle.net` |
-| `resource_type` | one term id from `resource_type` vocab | Yes | Learning Resource Type | Single-valued |
+| `resource_type` | one term id from `resource_type` vocab | Yes | Learning Resource Type | Single-valued; the learning genre (tutorial, guide, webinar…) |
+| `object_types` | list of term ids from `object_type` vocab | No (derived from `resource_type` when omitted) | — | What kind of digital object(s) the resource is: the DataCite 4.7 `resourceTypeGeneral` list (34 values, e.g. `dataset`, `software`, `computational-notebook`, `text`, `audiovisual`), multi-valued |
 | `license` | object `{id, name, url}` | Yes | License | `id` is an SPDX identifier (e.g. `CC-BY-4.0`); `name` and `url` filled from `_data/licenses.yml` when omitted |
 | `version_date` | ISO 8601 date | Yes | Version Date | Date of the most recent version of the external resource, not of the catalogue entry |
 | `authors` | list of `{name, type, orcid, ror, affiliation}` | No | Author(s) | `type` is `Person` or `Organization`; ORCID/ROR optional |
@@ -102,6 +103,7 @@ learning_outcomes:
   - "Validate and export the record for repository deposit"
 access_cost: "no"
 expertise_level: beginner
+object_types: [interactive-resource, dataset]
 lifecycle_stages: [process, preserve, share]
 research_areas: [solid-earth, land-surface]
 status: published
@@ -193,6 +195,7 @@ Recommendation: a GeoFAIR set of four terms — `draft`, `in-review`, `published
 | --- | --- |
 | Audience | Local list of six: researcher, data steward or data manager, student, educator or trainer, repository or infrastructure staff, policy maker or funder. RDA suggests the Europass target-group list, which is employment-oriented and does not fit; emitted as `schema:EducationalAudience` with `audienceType` |
 | Expertise level | beginner, intermediate, advanced (Bioschemas TrainingMaterial / TeSS convention); emitted as `educationalLevel` |
+| Digital object type | Candidates: DataCite `resourceTypeGeneral` (4.7, 34 values; every DOI carries one, but values are bare strings), COAR Resource Types 3.2 (~100 SKOS concepts with PURL URIs, 25 languages, built with DataCite crosswalks) and the DCMI Type Vocabulary (12 classes with URIs, too coarse for notebook or slides). Implemented as `object_type.yml`: the full DataCite list as ids, each term carrying its COAR URI (where one exists; *broad* or *close* where the match is not exact) and the DCMI class DataCite suggests. Emitted as `schema:additionalType` using the COAR URI, else DCMI, else the DataCite text; the emitted value is kept unique per term (CI checks) so the facet can map it back |
 | Access cost | RDA defines no vocabulary beyond the values `yes` / `no` / `maybe` (COAR access rights describes rights, not cost). Implemented as a seventh site vocabulary, `access_cost.yml`, whose ids are those three values and whose labels are **Free**, **Paid** and **May have a cost**; emitted as `conditionsOfAccess` (DefinedTerm) alongside the boolean `isAccessibleForFree` derived from it |
 | License | SPDX identifiers with a local `_data/licenses.yml` lookup for name and URL; emitted as `license` URL |
 
@@ -232,7 +235,8 @@ Every resource page emits one `schema:LearningResource` object (the type Biosche
 | `description` | `description` | Text |
 | `resource_url` | `url` | URL of the external material |
 | `identifier` (or `resource_url` when `url_type` is DOI/Handle/ARK) | `identifier`, `sameAs` | The resolvable PID URL as a plain string in both properties (simpler than a `PropertyValue`, and what the validators accept) |
-| `resource_type` | `learningResourceType` | `DefinedTerm {name, termCode, description, inDefinedTermSet, broadMatch}`; `additionalType` carries the DataCite `close_match` string |
+| `resource_type` | `learningResourceType` | `DefinedTerm {name, termCode, description, inDefinedTermSet, broadMatch}` |
+| `object_types[]` | `additionalType` | Array of URIs, one per digital object type: the COAR Resource Types 3.2 concept URI, else the DCMI Type URI, else the DataCite value as text. Derived from the resource type's `close_match` when the field is omitted |
 | `license` | `license` | URL (SPDX canonical) |
 | `version_date` | `dateModified` | ISO date (Schema.org has no "version date"; `dateModified` is the closest and is what Google reads) |
 | `authors[]` | `author` | `Person {name, identifier: ORCID, affiliation}` or `Organization {name, identifier: ROR}` |
@@ -272,7 +276,7 @@ The JSON-LD for the example resource:
     "inDefinedTermSet": "https://harborlighttech.github.io/geofair-ocean/vocab/resource-type/",
     "broadMatch": "http://purl.org/dcx/lrmi-vocabs/learningResourceType/activityPlan"
   },
-  "additionalType": "InteractiveResource",
+  "additionalType": ["http://purl.org/coar/resource_type/c_e9a0", "http://purl.org/coar/resource_type/c_ddb1"],
   "license": "https://creativecommons.org/licenses/by/4.0/",
   "dateModified": "2025-03-14",
   "sdDatePublished": "2025-06-10",
@@ -322,6 +326,7 @@ The search page at `/resources/` embeds one `<script type="application/ld+json" 
 | --- | --- | --- | --- |
 | Lifecycle stage | `about[]` where `inDefinedTermSet` ends in `/lifecycle-stage/` | Multi-select, OR within the facet | none |
 | Resource type | `learningResourceType.termCode` | Multi-select, OR within the facet | none |
+| Digital object type | `additionalType[]`, mapped back to term ids through the facet panel's `data-match` values | Multi-select, OR within the facet | none |
 | Research area | `about[]` where `inDefinedTermSet` ends in `/research-area/` | Multi-select, OR within the facet | none |
 | Status | `creativeWorkStatus.termCode` | Single toggle: "include obsolete" | published only |
 | Expertise level | `educationalLevel.termCode` | Multi-select | none |
@@ -353,7 +358,7 @@ The repository is a plain Jekyll 4 site with no theme gem and no third-party Jek
 ├── _resources/                 # one Markdown file per resource
 ├── _data/
 │   ├── vocab/                  # lifecycle_stage, resource_type, research_area, status,
-│   │                           # audience, expertise_level, access_cost (.yml)
+│   │                           # audience, expertise_level, access_cost, object_type (.yml)
 │   └── licenses.yml            # SPDX id -> name, url
 ├── _layouts/
 │   ├── default.html
@@ -449,6 +454,7 @@ Sequencing notes. Phase 2 can start in parallel with Phase 1 once the schema tab
 | 2026-11-14 | Every badge has a hover tooltip with the term's definition | Owner request; definitions already existed in the vocabularies |
 | 2026-11-14 | `GETTING-STARTED.md` added; planning documents moved to `docs/` and excluded from the build | Two uploads lost hidden files and one overwrote config; the guide documents the setup steps. Markdown without front matter would otherwise be published as raw text |
 | 2026-11-14 | House rule: variables assigned inside a Liquid include must not reuse names from the calling layout | An include's `cost` overwrote the layout's `cost`, blanking a badge |
+| 2026-11-15 | Digital object type added as an eighth vocabulary (`object_type.yml`: DataCite 4.7 `resourceTypeGeneral` ids with COAR 3.2 and DCMI crosswalks), multi-valued, emitted as `schema:additionalType` COAR/DCMI URIs, with a facet, badges and an Issue-form field; replaces the earlier `additionalType` that echoed the resource type's DataCite mapping | Owner request: tag resources by what they are (data, software, guide…) independently of the learning genre |
 
 ## Sources
 

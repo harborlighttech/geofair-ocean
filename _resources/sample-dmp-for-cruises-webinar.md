@@ -19,6 +19,7 @@ learning_outcomes:
   - "Match each data stream to an appropriate long-term repository"
 access_cost: "no"
 expertise_level: beginner
+object_types: [audiovisual, presentation]
 lifecycle_stages: [plan]
 research_areas: [research-data-management, ocean-observing-systems]
 status: published

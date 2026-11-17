@@ -15,6 +15,7 @@ pick DefinedTerms out of the JSON-LD "about" array, or a property name).
     {%- when "expertise_level" %}{% assign key = "level" %}{% assign src = "educationalLevel" %}
     {%- when "audience" %}{% assign key = "audience" %}{% assign src = "audience" %}
     {%- when "access_cost" %}{% assign key = "cost" %}{% assign src = "conditionsOfAccess" %}
+    {%- when "object_type" %}{% assign key = "object" %}{% assign src = "additionalType" %}
     {%- else %}{% assign key = f %}{% assign src = "about" %}
   {%- endcase %}
   <fieldset class="facet" data-facet="{{ key }}" data-set="{{ v.id }}" data-source="{{ src }}">
@@ -22,7 +23,7 @@ pick DefinedTerms out of the JSON-LD "about" array, or a property name).
     <ul class="facet__list">
       {%- for t in v.terms %}
       <li class="facet__item">
-        <input type="checkbox" id="f-{{ key }}-{{ t.id }}" name="{{ key }}" value="{{ t.id }}">
+        <input type="checkbox" id="f-{{ key }}-{{ t.id }}" name="{{ key }}" value="{{ t.id }}"{% if src == "additionalType" %} data-match="{{ t.coar | default: t.dcmi | default: t.datacite }}"{% endif %}>
         <label for="f-{{ key }}-{{ t.id }}" title="{{ t.definition | escape }}">{{ t.label }}</label>
         <span class="facet__count" data-count-for="{{ t.id }}"></span>
       </li>
