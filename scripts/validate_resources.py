@@ -19,8 +19,8 @@ import sys
 
 import jsonschema
 
-from common import (FILENAME_RE, LOCAL_ID_RE, RESOURCES_DIR, SCHEMA_FILE, SLUG_RE, load_licenses,
-                    load_vocabs, normalise_dates, split_front_matter)
+from common import (FILENAME_RE, LOCAL_ID_RE, RESOURCES_DIR, SCHEMA_FILE, SLUG_RE, is_skipped,
+                    load_licenses, load_vocabs, normalise_dates, split_front_matter)
 
 
 def main() -> int:
@@ -39,6 +39,8 @@ def main() -> int:
     # local_id of every resource file (for superseded_by checks), read up front
     all_local_ids: dict[str, str] = {}
     for p in RESOURCES_DIR.glob("*.md"):
+        if is_skipped(p):
+            continue  # not built, so not a valid superseded_by target
         try:
             d, _ = split_front_matter(p.read_text(encoding="utf-8"))
             if isinstance(d.get("local_id"), str):
@@ -69,45 +71,56 @@ def main() -> int:
     local_ids_ci: dict[str, str] = {}     # lower-cased id -> file
     records: list[tuple[str, dict]] = []
 
+    skipped = 0
     for path in files:
         name = path.name
-        if not FILENAME_RE.match(path.stem):
-            errors.append(f"{name}: filename may only use letters, digits, dot, dash and underscore")
+        # Files starting with '_' are excluded from the build by Jekyll; validate them so
+        # they are ready to publish, but report problems as warnings, not errors.
+        if is_skipped(path):
+            skipped += 1
+            report = warnings
+            name = f"{path.name} (skipped from build)"
+            stem = path.stem.lstrip("_.")
+        else:
+            report = errors
+            stem = path.stem
+        if not FILENAME_RE.match(stem):
+            report.append(f"{name}: filename may only use letters, digits, dot, dash and underscore")
         try:
             data, _body = split_front_matter(path.read_text(encoding="utf-8"))
         except Exception as exc:  # noqa: BLE001
-            errors.append(f"{name}: {exc}")
+            report.append(f"{name}: {exc}")
             continue
         data = normalise_dates(data)
 
         # Local identifier: present, allowed characters, unique, and the file is named after it.
         lid = data.get("local_id")
         if lid is None or lid == "":
-            errors.append(f"{name}: local_id is missing (required; letters, digits, '.', '-', '_')")
+            report.append(f"{name}: local_id is missing (required; letters, digits, '.', '-', '_')")
         elif not isinstance(lid, str):
-            errors.append(f"{name}: local_id must be a quoted string (YAML read {lid!r} as {type(lid).__name__})")
+            report.append(f"{name}: local_id must be a quoted string (YAML read {lid!r} as {type(lid).__name__})")
         elif not LOCAL_ID_RE.match(lid):
             bad = sorted({c for c in lid if not re.match(r"[A-Za-z0-9._-]", c)})
-            errors.append(f"{name}: local_id '{lid}' contains disallowed character(s) {bad}; allowed: letters, digits, '.', '-', '_'")
+            report.append(f"{name}: local_id '{lid}' contains disallowed character(s) {bad}; allowed: letters, digits, '.', '-', '_'")
         else:
             if lid in local_ids:
-                errors.append(f"{name}: local_id '{lid}' is already used by {local_ids[lid]}")
+                report.append(f"{name}: local_id '{lid}' is already used by {local_ids[lid]}")
             elif lid.lower() in local_ids_ci:
-                errors.append(f"{name}: local_id '{lid}' differs only by case from '{local_ids_ci[lid.lower()]}'; ids must be unique case-insensitively (URLs and macOS filenames collide)")
+                report.append(f"{name}: local_id '{lid}' differs only by case from '{local_ids_ci[lid.lower()]}'; ids must be unique case-insensitively (URLs and macOS filenames collide)")
             local_ids.setdefault(lid, name)
             local_ids_ci.setdefault(lid.lower(), name)
-            if path.stem != lid:
-                errors.append(f"{name}: filename must be '{lid}.md' so the canonical URL is /resources/{lid}/")
+            if stem != lid:
+                report.append(f"{name}: filename must be '{lid}.md' so the canonical URL is /resources/{lid}/")
         if data.get("slug") is not None and not (isinstance(data["slug"], str) and SLUG_RE.match(data["slug"])):
-            errors.append(f"{name}: slug must be kebab-case (a-z, 0-9, hyphens)")
+            report.append(f"{name}: slug must be kebab-case (a-z, 0-9, hyphens)")
 
         # Common YAML trap: unquoted no/yes becomes a boolean.
         if isinstance(data.get("access_cost"), bool):
-            errors.append(f"{name}: access_cost must be quoted (\"no\", \"yes\" or \"maybe\"); YAML read it as a boolean")
+            report.append(f"{name}: access_cost must be quoted (\"no\", \"yes\" or \"maybe\"); YAML read it as a boolean")
 
         for err in sorted(validator.iter_errors(data), key=lambda e: list(e.path)):
             loc = "/".join(str(p) for p in err.path) or "(root)"
-            errors.append(f"{name}: {loc}: {err.message}")
+            report.append(f"{name}: {loc}: {err.message}")
 
         for field, vkey in field_to_vocab.items():
             val = data.get(field)
@@ -116,15 +129,15 @@ def main() -> int:
             vals = val if isinstance(val, list) else [val]
             for v in vals:
                 if v not in vocab_ids[vkey]:
-                    errors.append(f"{name}: {field}: '{v}' is not a term in _data/vocab/{vkey}.yml")
+                    report.append(f"{name}: {field}: '{v}' is not a term in _data/vocab/{vkey}.yml")
 
         lic = data.get("license")
         if isinstance(lic, dict) and lic.get("id") and lic["id"] not in licenses:
-            errors.append(f"{name}: license.id '{lic['id']}' is not in _data/licenses.yml")
+            report.append(f"{name}: license.id '{lic['id']}' is not in _data/licenses.yml")
 
         sup = data.get("superseded_by")
         if sup and "://" not in sup and sup not in all_local_ids:
-            errors.append(f"{name}: superseded_by '{sup}' is not the local_id of any resource in _resources/")
+            report.append(f"{name}: superseded_by '{sup}' is not the local_id of any resource in _resources/")
         if not data.get("object_types"):
             warnings.append(f"{name}: no object_types; the build will derive one from resource_type")
         if data.get("status") == "obsolete" and not sup:
@@ -134,7 +147,7 @@ def main() -> int:
         if isinstance(t, str):
             key = t.strip().lower()
             if key in titles:
-                errors.append(f"{name}: duplicate title (also in {titles[key]})")
+                report.append(f"{name}: duplicate title (also in {titles[key]})")
             titles[key] = name
 
         if data.get("url_type") == "URL" and "doi.org/" in str(data.get("resource_url", "")):
@@ -165,7 +178,8 @@ def main() -> int:
         print(f"WARNING {w}")
     for e in errors:
         print(f"ERROR   {e}")
-    print(f"{len(files)} resource file(s) checked: {len(errors)} error(s), {len(warnings)} warning(s)")
+    note = f" ({skipped} skipped from the build: filename starts with '_')" if skipped else ""
+    print(f"{len(files)} resource file(s) checked{note}: {len(errors)} error(s), {len(warnings)} warning(s)")
     return 1 if errors else 0
 
 

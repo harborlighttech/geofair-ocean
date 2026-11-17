@@ -8,6 +8,8 @@ Use the **Suggest a resource** Issue form in this repository. A workflow convert
 
 Resources are Markdown files in `_resources/`. Every resource has an author-assigned **local identifier** (`local_id`: letters, digits, `.`, `-`, `_`; unique in the catalogue, case-insensitively), and the file is named `<local_id>.md`, which makes the canonical URL `/resources/<local_id>/`. A readable alias `/resources/<local_id>/<slug>/` (slug from the optional `slug` field, otherwise the title) redirects to it. The front matter is the record; the Markdown body is optional notes shown on the page.
 
+**Keeping a resource out of the build:** a file whose name starts with an underscore (`_resources/_my-id.md`) is ignored by Jekyll — no page, no search entry, no JSON-LD — while staying in the repository. Use this for work in progress or entries awaiting permission. The validator still checks such files (so they are ready to publish) but reports their problems as warnings rather than failing the build. Rename the file to `<local_id>.md` to publish it. `_resources/_template.md` is a copyable template that is skipped this way.
+
 ### Field reference
 
 | Field | Required | Type | RDA element | Notes |
