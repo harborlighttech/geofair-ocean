@@ -54,7 +54,8 @@ fonts:
 # Shown in the header immediately before the site title. Either a path inside
 # the site (e.g. assets/img/logo.png) or an absolute https:// URL. Leave empty
 # and nothing is rendered in that space.
-logo: ""
+# Example: https://thumbs.dreamstime.com/b/ocean-logo-design-abstract-waves-seagulls-89336091.jpg
+logo: "https://thumbs.dreamstime.com/b/ocean-logo-design-abstract-waves-seagulls-89336091.jpg"
 logo_alt: ""             # accessible name for the logo; leave empty if the title already says it
 logo_height: 38          # rendered height in px (width scales)
 
