@@ -112,6 +112,7 @@ main.container { padding-top: 44px; padding-bottom: 80px; min-height: 60vh; }
 .chip--object { background: var(--c-background); color: var(--c-accent); border-color: var(--c-accent); }
 .chip--free { background: var(--c-background); color: var(--c-success); border-color: var(--c-success); }
 .chip--warning { background: var(--c-background); color: var(--c-warning); border-color: var(--c-warning); }
+.chip--obsolete { background: var(--c-danger); color: #fff; border-color: var(--c-danger); }
 .chip--stage, .chip--area { border-color: var(--c-border-soft); }
 .chip[title] { cursor: help; }
 .chip--link { text-decoration: none; cursor: pointer; }
