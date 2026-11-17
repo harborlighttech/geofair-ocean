@@ -21,7 +21,7 @@ import pathlib
 import re
 import sys
 
-from common import RESOURCES_DIR, ROOT, is_skipped, load_config, split_front_matter
+from common import RESOURCES_DIR, ROOT, is_skipped, load_config, resource_slug, split_front_matter
 
 SCRIPT_RE = re.compile(r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', re.S | re.I)
 REQUIRED_LR = ["@id", "name", "description", "url", "learningResourceType", "license", "dateModified",
@@ -133,7 +133,7 @@ def main() -> int:
             if lid and lid not in live_ids and (site_dir / "resources" / lid / "index.html").exists():
                 errors.append(f"{src.name}: starts with '_' but resources/{lid}/ was built; Jekyll should skip it")
             continue
-        slug = str(fm.get("slug") or jekyll_slugify(fm.get("title", "")))
+        slug = resource_slug(src, fm)
         if not lid or not slug:
             continue
         canonical = site_dir / "resources" / lid / "index.html"

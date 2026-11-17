@@ -1,7 +1,7 @@
 ---
 # VALIDATION FIXTURE — filename does not match the local identifier.
 # Skipped from the build (filename starts with '_'); checked by scripts/test_validation.py.
-# EXPECT: filename must be 'other-id.md'
+# EXPECT: filename must be 'other-id_<slug>.md' (or 'other-id.md')
 local_id: other-id
 slug: local-id-filename-mismatch
 title: "Validation fixture: filename does not match the local identifier"

@@ -115,8 +115,10 @@ def main() -> int:
                 report.append(f"{name}: local_id '{lid}' differs only by case from '{local_ids_ci[lid.lower()]}'; ids must be unique case-insensitively (URLs and macOS filenames collide)")
             local_ids.setdefault(lid, name)
             local_ids_ci.setdefault(lid.lower(), name)
-            if stem != lid:
-                report.append(f"{name}: filename must be '{lid}.md' so the canonical URL is /resources/{lid}/")
+            if not (stem == lid or stem.startswith(lid + "_") and len(stem) > len(lid) + 1):
+                report.append(f"{name}: filename must be '{lid}_<slug>.md' (or '{lid}.md'); the canonical URL is /resources/{lid}/ regardless")
+            elif stem != lid and not SLUG_RE.match(stem[len(lid) + 1:]):
+                report.append(f"{name}: the part after '{lid}_' must be a kebab-case slug (a-z, 0-9, hyphens)")
         if data.get("slug") is not None and not (isinstance(data["slug"], str) and SLUG_RE.match(data["slug"])):
             report.append(f"{name}: slug must be kebab-case (a-z, 0-9, hyphens)")
 

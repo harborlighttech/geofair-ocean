@@ -1,7 +1,7 @@
 ---
 # VALIDATION FIXTURE — local identifier already used by another resource.
 # Skipped from the build (filename starts with '_'); checked by scripts/test_validation.py.
-# EXPECT: local_id 'sample-002' is already used by sample-002.md
+# EXPECT: local_id 'sample-002' is already used by sample-002_cf-conventions-guide.md
 local_id: sample-002
 slug: local-id-duplicate
 title: "Validation fixture: local identifier already used by another resource"

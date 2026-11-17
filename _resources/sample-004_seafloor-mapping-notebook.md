@@ -1,7 +1,6 @@
 ---
 # SAMPLE ENTRY — replace or delete before launch. The URL is a placeholder.
 local_id: sample-004
-slug: seafloor-mapping-notebook
 title: "Gridding multibeam bathymetry: a reproducible notebook"
 description: "A Jupyter notebook that takes cleaned multibeam soundings, grids them at a chosen resolution, writes a CF-compliant GeoTIFF and netCDF, and records the processing provenance so the grid can be deposited with full documentation. Runs on a small sample dataset included in the repository."
 resource_url: https://example.org/notebooks/multibeam-gridding

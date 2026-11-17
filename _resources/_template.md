@@ -1,9 +1,9 @@
 ---
-# TEMPLATE — copy this file to _resources/<local_id>.md and fill it in.
+# TEMPLATE — copy this file to _resources/<local_id>_<slug>.md and fill it in.
 # Files whose name starts with "_" (like this one) are never built.
 # Field reference: CONTRIBUTING.md. Vocabulary ids: _data/vocab/*.yml or /vocab/ on the site.
 local_id: template                       # letters, digits, . - _ ; unique; becomes /resources/<local_id>/
-slug: example-resource-title             # optional readable alias; defaults to the title
+# slug: example-resource-title          # optional; by default the slug is the filename part after "<local_id>_"
 title: "Example resource title"
 description: "Two to four sentences: what the resource covers, how long it takes, what the learner needs first. Between 40 and 2000 characters."
 resource_url: https://example.org/resource          # landing page or DOI/handle URL
