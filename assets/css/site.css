@@ -117,6 +117,7 @@ main.container { padding-top: 44px; padding-bottom: 80px; min-height: 60vh; }
 .chip[title] { cursor: help; }
 .chip--link { text-decoration: none; cursor: pointer; }
 .chip--link:hover { border-color: var(--c-primary); color: var(--c-primary); text-decoration: none; }
+.chip--type.chip--link:hover { color: var(--c-primary-text); background: #1B3B47; border-color: #1B3B47; }
 
 .notice { padding: 12px 16px; border-radius: 6px; border: 1px solid var(--c-border); background: var(--c-surface); margin: 0 0 22px; font-size: 14px; }
 .notice strong { font-family: var(--f-display); }
