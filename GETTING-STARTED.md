@@ -30,7 +30,9 @@ Open `_config.yml` and replace every `TODO` in the first block.
 | `baseurl` | `/<repo>` (leading slash, no trailing slash) |
 | `github_repo` | `https://github.com/<org>/<repo>` |
 | `footer_links` | The repo URL and `https://github.com/<org>/<repo>/issues/new?template=new-resource.yml` |
-| `theme_colors` | Your palette; every value becomes a CSS variable |
+| `theme_colors` | Your palette; every value becomes a CSS variable (defaults are the AGU brand colours) |
+| `fonts` | Display and body font stacks and the Google Fonts URL that loads them; `google_fonts_url: ""` for system fonts only |
+| `logo`, `logo_alt`, `logo_height` | Optional logo shown before the site title in the header: a path under the site or an `https://` URL; empty shows nothing |
 
 For an organisation site (`https://<org>.github.io/`) or a custom domain, set `baseurl: ""`.
 

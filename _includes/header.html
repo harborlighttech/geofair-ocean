@@ -2,7 +2,8 @@
   <div class="container site-header__inner">
     <a class="site-brand" href="{{ '/' | relative_url }}">
       {%- if site.logo and site.logo != "" -%}
-      <img class="site-brand__logo" src="{{ site.logo | relative_url }}" alt="">
+      {%- if site.logo contains "://" %}{% assign logo_src = site.logo %}{% else %}{% assign logo_src = site.logo | relative_url %}{% endif -%}
+      <img class="site-brand__logo" src="{{ logo_src }}" alt="{{ site.logo_alt | default: '' | escape }}" height="{{ site.logo_height | default: 38 }}">
       {%- endif -%}
       <span class="site-brand__title">{{ site.title }}</span>
     </a>

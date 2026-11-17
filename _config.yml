@@ -22,25 +22,45 @@ github_repo: "https://github.com/harborlighttech/geofair-ocean"
 
 # --- Colour scheme ----------------------------------------------------------
 # Each value becomes a CSS custom property (--c-<key>) in <head>, so the whole
-# site restyles from here. Keep contrast of text on background >= 4.5:1.
+# site restyles from here. Defaults follow the AGU brand (primary #244C5A,
+# secondary #007DBA on white). Keep text on background at 4.5:1 or better.
 theme_colors:
-  primary: "#0b4f6c"      # header bar, buttons, links on light surfaces
+  primary: "#244C5A"      # headings, primary buttons, rules under the masthead and above the footer
   primary_text: "#ffffff" # text on primary
-  accent: "#f2a541"       # highlights, focus rings, active facet chips
+  accent: "#007DBA"       # links, hover underlines, active facet chips, focus rings
+  accent_bg: "#E4F2FA"    # tint behind accent-marked items
   background: "#ffffff"
-  surface: "#f3f7f9"      # cards, facet panel
-  text: "#1c2b33"
-  muted: "#5c6b75"
-  border: "#d8e1e7"
-  link: "#0b4f6c"
-  success: "#2e7d32"
-  warning: "#b26a00"
-  danger: "#b3261e"
+  surface: "#F5F7F8"      # cards, facet panel, footer
+  text: "#244C5A"
+  muted: "#587380"        # secondary text, labels
+  muted_2: "#5E7682"      # tertiary text, uppercase section labels
+  border: "#D5DFE3"       # rules and card borders
+  border_soft: "#E8EEF0"  # lighter rules inside lists
+  link: "#007DBA"
+  success: "#0B6B4F"
+  warning: "#8C6410"
+  danger: "#A24B2E"
+
+# --- Typography -------------------------------------------------------------
+# display: headings, labels, navigation, buttons. body: running prose.
+# google_fonts_url loads the web fonts; set it to "" to use only system fonts
+# (the stacks below fall back to Helvetica/Arial and Georgia).
+fonts:
+  display: "'Montserrat', 'Helvetica Neue', Arial, sans-serif"
+  body: "'Lora', Georgia, 'Times New Roman', serif"
+  google_fonts_url: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+
+# --- Logo (optional) --------------------------------------------------------
+# Shown in the header immediately before the site title. Either a path inside
+# the site (e.g. assets/img/logo.png) or an absolute https:// URL. Leave empty
+# and nothing is rendered in that space.
+logo: ""
+logo_alt: ""             # accessible name for the logo; leave empty if the title already says it
+logo_height: 38          # rendered height in px (width scales)
 
 # Optional hero image for the home page (path under assets/ or an absolute URL)
 hero_image: ""
 hero_credit: ""
-logo: ""                 # e.g. assets/img/logo.svg; leave empty for text-only header
 
 # --- Navigation -------------------------------------------------------------
 nav:

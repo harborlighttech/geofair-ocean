@@ -1,5 +1,6 @@
 ---
 title: About
+main_class: page-prose
 permalink: /about/
 ---
 # About this hub
