@@ -55,6 +55,7 @@ module GeoFAIR
 
         page = Jekyll::PageWithoutAFile.new(site, site.source, File.join("resources", local_id, slug), "index.md")
         page.data = doc.data.dup
+        page.data["permalink"] = "/resources/#{local_id}/#{slug}/"   # not the canonical permalink copied from the doc
         page.data["canonical_path"] = doc.url          # used by layouts and the JSON-LD include
         page.data["source_path"] = doc.relative_path   # used by the "Suggest an edit" link
         page.data["is_alias"] = true
