@@ -41,11 +41,15 @@ layout: default
         {%- if r.status == "obsolete" and st %} <span class="chip chip--obsolete" title="{{ st.definition | escape }}">{{ st.label }}</span>{% endif %}
       </p>
       <h1 class="resource__title">{{ r.title }}</h1>
+      {%- assign pid = r.identifier | default: "" -%}
+      {%- if pid == "" and r.url_type and r.url_type != "URL" %}{% assign pid = r.resource_url %}{% endif -%}
+      {%- if pid != "" %}
+      <p class="resource__pid"><span class="resource__pid-label">{% if pid contains "doi.org/" %}DOI{% elsif pid contains "hdl.handle.net/" %}Handle{% elsif pid contains "/ark:" %}ARK{% elsif r.url_type and r.url_type != "URL" %}{{ r.url_type }}{% else %}Identifier{% endif %}</span> <a href="{{ pid }}" target="_blank" rel="noopener">{{ pid }}</a></p>
+      {%- endif %}
       <p class="resource__description">{{ r.description }}</p>
 
       <p class="resource__cta">
         <a class="button" href="{{ r.resource_url }}" target="_blank" rel="noopener">Open the resource <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
-        {%- if r.identifier %} <a class="resource__pid" href="{{ r.identifier }}" target="_blank" rel="noopener">{{ r.identifier }}</a>{% endif %}
       </p>
       {%- if r.learning_outcomes and r.learning_outcomes.size > 0 %}
       <h2>What you will learn</h2>
