@@ -109,6 +109,7 @@ def main() -> int:
         sys.exit(f"ERROR local identifier {local_id!r} is missing or uses characters outside letters, digits, '.', '-', '_'")
     data: dict = {
         "local_id": local_id,
+        "slug": "",
         "title": f.get("title", "").strip(),
         "description": " ".join(f.get("description", "").split()),
         "resource_url": f.get("resource_url", "").strip(),
@@ -150,9 +151,9 @@ def main() -> int:
         data["testimonials"] = tms
     data["date_added"] = args.date
 
-    slug = args.slug or slugify(data["title"], max_len=60)
-    path = RESOURCES_DIR / f"{local_id}-{slug}.md"
-    if path.exists() or any(p.stem == local_id or p.stem.startswith(local_id + "-") for p in RESOURCES_DIR.glob("*.md")):
+    data["slug"] = args.slug or slugify(data["title"], max_len=60)
+    path = RESOURCES_DIR / f"{local_id}.md"
+    if path.exists() or any(p.stem.lower() == local_id.lower() for p in RESOURCES_DIR.glob("*.md")):
         sys.exit(f"ERROR a resource with local identifier {local_id!r} already exists")
     body_md = (f.get("notes", "") or "").strip()
     path.write_text(dump_front_matter(data, body_md + ("\n" if body_md else "")), encoding="utf-8")

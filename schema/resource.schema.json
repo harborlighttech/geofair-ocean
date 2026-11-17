@@ -8,7 +8,8 @@
   "required": ["local_id", "title", "description", "resource_url", "resource_type", "license", "version_date", "lifecycle_stages", "research_areas", "status"],
   "properties": {
     "layout": {"type": "string"},
-    "local_id": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9._-]+$", "$comment": "Author-assigned local identifier: letters, digits, dot, dash, underscore. Unique across _resources/ (case-insensitively). The file must be named <local_id>.md or <local_id>-<slug>.md, which makes it the resource's URL"},
+    "local_id": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9._-]+$", "$comment": "Author-assigned local identifier: letters, digits, dot, dash, underscore. Unique across _resources/ (case-insensitively). The file must be named <local_id>.md; the canonical URL is /resources/<local_id>/"},
+    "slug": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "maxLength": 80, "$comment": "Optional readable alias: /resources/<local_id>/<slug>/ redirects to the canonical URL. Defaults to the slugified title"},
     "title": {"type": "string", "minLength": 3, "maxLength": 1000, "$comment": "RDA 1 Title"},
     "description": {"type": "string", "minLength": 40, "maxLength": 2000, "$comment": "RDA 2 Abstract/Description"},
     "resource_url": {"type": "string", "format": "uri", "pattern": "^https?://", "maxLength": 1000, "$comment": "RDA 8 URL to Resource"},

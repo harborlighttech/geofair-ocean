@@ -1,6 +1,7 @@
 ---
 # SAMPLE ENTRY — replace or delete before launch. The URL is a placeholder.
 local_id: sample-001
+slug: argo-float-data-tutorial
 title: "Working with Argo float profiles in Python"
 description: "A two-hour, hands-on tutorial that downloads Argo temperature and salinity profiles, reads the netCDF files with xarray, applies the quality-control flags correctly, and plots a section. Assumes basic Python; no prior oceanography is needed."
 resource_url: https://example.org/tutorials/argo-python

@@ -1,6 +1,7 @@
 ---
 # SAMPLE ENTRY — replace or delete before launch. The URL is a placeholder.
 local_id: sample-002
+slug: cf-conventions-guide
 title: "Writing CF-compliant netCDF files for ocean observations"
 description: "A written guide to the Climate and Forecast (CF) metadata conventions as applied to ocean time series, profiles and trajectories: required global attributes, standard names, coordinate variables, and the discrete sampling geometry feature types. Includes a checklist and worked examples for a mooring and a glider."
 resource_url: https://example.org/guides/cf-ocean

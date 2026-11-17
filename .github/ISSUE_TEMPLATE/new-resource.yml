@@ -13,8 +13,8 @@ body:
   id: local_id
   attributes:
     label: Local identifier
-    description: A short identifier you assign, unique in this catalogue. Letters, digits, dot, dash and underscore only (e.g.
-      argo-python-2025 or NOAA.CF-guide_v2). It becomes part of the resource's URL.
+    description: 'A short identifier you assign, unique in this catalogue. Letters, digits, dot, dash and underscore only
+      (e.g. argo-python-2025 or NOAA.CF-guide_v2). It becomes the resource''s URL: /resources/<identifier>/.'
     placeholder: my-resource-id
   validations:
     required: true

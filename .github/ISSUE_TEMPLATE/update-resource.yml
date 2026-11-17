@@ -9,7 +9,7 @@ body:
   id: local_id
   attributes:
     label: Local identifier
-    description: Shown as 'Catalogue identifier' on the resource page and at the start of its URL.
+    description: Shown as 'Catalogue identifier' on the resource page; its URL is /resources/<identifier>/.
   validations:
     required: true
 - type: dropdown

@@ -109,7 +109,7 @@ layout: default
         <dt>Status</dt>
         <dd>{{ st.label | default: r.status }}</dd>
         <dt>Catalogue identifier</dt>
-        <dd><code>{{ r.local_id }}</code></dd>
+        <dd><code>{{ r.local_id }}</code><br><a href="{{ page.url | absolute_url }}" class="muted">{{ page.url | absolute_url }}</a></dd>
         {%- if r.date_added %}
         <dt>Added to catalogue</dt>
         <dd><time datetime="{{ r.date_added | date: '%Y-%m-%d' }}">{{ r.date_added | date: "%-d %B %Y" }}</time></dd>

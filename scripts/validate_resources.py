@@ -96,11 +96,10 @@ def main() -> int:
                 errors.append(f"{name}: local_id '{lid}' differs only by case from '{local_ids_ci[lid.lower()]}'; ids must be unique case-insensitively (URLs and macOS filenames collide)")
             local_ids.setdefault(lid, name)
             local_ids_ci.setdefault(lid.lower(), name)
-            stem = path.stem
-            if not (stem == lid or stem.startswith(lid + "-") and len(stem) > len(lid) + 1):
-                errors.append(f"{name}: filename must be '{lid}.md' or '{lid}-<slug>.md' so the URL carries the local_id")
-            elif stem != lid and not SLUG_RE.match(stem[len(lid) + 1:]):
-                errors.append(f"{name}: the part after '{lid}-' must be a kebab-case slug (a-z, 0-9, hyphens)")
+            if path.stem != lid:
+                errors.append(f"{name}: filename must be '{lid}.md' so the canonical URL is /resources/{lid}/")
+        if data.get("slug") is not None and not (isinstance(data["slug"], str) and SLUG_RE.match(data["slug"])):
+            errors.append(f"{name}: slug must be kebab-case (a-z, 0-9, hyphens)")
 
         # Common YAML trap: unquoted no/yes becomes a boolean.
         if isinstance(data.get("access_cost"), bool):
