@@ -24,6 +24,10 @@ The visual language follows the AGU *Impactful Datasets* site: Montserrat for he
 - `fonts:` — `display` and `body` font stacks (emitted as `--f-display` / `--f-body`) and `google_fonts_url`, which loads the web fonts. Set `google_fonts_url: ""` to avoid the external request; the stacks then fall back to system fonts.
 - `logo:` — optional. A path inside the site (`assets/img/logo.png`) or an absolute `https://` URL. When set, the image is shown in the header immediately before the site title at `logo_height` px (width scales); `logo_alt` is its accessible name. When empty, nothing is rendered in that space.
 
+## Analytics (optional)
+
+Google Analytics 4 is wired in but off: `analytics.google.measurement_id` in `_config.yml` is empty, and nothing is emitted until a `G-` ID is set. The tag only appears in production builds (`JEKYLL_ENV=production`, set by the workflow), honours Global Privacy Control / Do Not Track, keeps Google Signals and ad features off, and offers an opt-out link on the About page. `consent_mode: banner` adds a Consent Mode v2 Accept/Decline bar. CI asserts the tag is absent when the ID is empty and correct when it is set (`scripts/check_analytics.py`). See GETTING-STARTED.md §9.
+
 ## Repository layout
 
 ```
@@ -84,6 +88,7 @@ python scripts/validate_resources.py       # front matter, vocab ids, licences
 python scripts/test_validation.py          # validator self-test against _resources/_test-*.md fixtures
 python scripts/validate_jsonld.py          # after a build: parses and checks every JSON-LD block
 python scripts/validate_jsonld.py --shacl  # optional; needs pyshacl and rdflib
+python scripts/check_analytics.py --from-config   # after a build: GA4 tag present/absent as _config.yml says
 ```
 
 ## Structured data

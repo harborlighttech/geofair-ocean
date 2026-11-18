@@ -1,0 +1,7 @@
+# Overlay config used only by CI to prove the GA4 include works and is gated:
+#   bundle exec jekyll build --config _config.yml,scripts/ci/analytics-dummy.yml
+# G-CI000000 is not a real property; nothing is ever sent from CI builds.
+analytics:
+  google:
+    measurement_id: "G-CI000000"
+    consent_mode: banner

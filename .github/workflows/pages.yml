@@ -59,6 +59,22 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Validate emitted JSON-LD
         run: python scripts/validate_jsonld.py --site _site
+      - name: Analytics tag matches _config.yml (absent when measurement_id is empty)
+        run: python scripts/check_analytics.py --site _site --from-config
+      - name: Analytics include works with a dummy id (production)
+        run: |
+          bundle exec jekyll build --strict_front_matter --baseurl "${{ steps.pages.outputs.base_path }}" \
+            --config _config.yml,scripts/ci/analytics-dummy.yml -d _site_ga_prod
+          python scripts/check_analytics.py --site _site_ga_prod --expect present --id G-CI000000
+        env:
+          JEKYLL_ENV: production
+      - name: Analytics include is gated off outside production
+        run: |
+          bundle exec jekyll build --strict_front_matter --baseurl "${{ steps.pages.outputs.base_path }}" \
+            --config _config.yml,scripts/ci/analytics-dummy.yml -d _site_ga_dev
+          python scripts/check_analytics.py --site _site_ga_dev --expect absent
+        env:
+          JEKYLL_ENV: development
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

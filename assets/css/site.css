@@ -192,3 +192,9 @@ main > h2, .page-prose h2 { font-size: 12px; font-weight: 500; letter-spacing: 0
   .site-footer__inner { padding: 22px 20px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Consent banner (only rendered when analytics.google.consent_mode is "banner") */
+.consent-bar { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; max-width: 680px; margin: 0 auto; background: var(--c-background); color: var(--c-text); border: 1px solid var(--c-border); border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); padding: 16px 20px; font-size: 15px; }
+.consent-bar[hidden] { display: none; }
+.consent-bar p { margin: 0 0 12px; }
+.consent-bar__actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 0 !important; }

@@ -92,6 +92,23 @@ python scripts/build_issue_form.py
 
 Open **Issues → New issue → Suggest a resource**, fill in the form and submit. Within a minute or two a pull request titled *New resource: …* should appear, with the new file under `_resources/` and `status: in-review`. Review it, change `status` to `published`, merge, and the resource appears on the site after the next deploy.
 
+## 9. Turn on Google Analytics (optional)
+
+The site ships with analytics switched off: `analytics.google.measurement_id` in `_config.yml` is empty, and while it is empty no analytics code is emitted on any page. To switch it on:
+
+1. In Google Analytics, create (or ask GeoFAIR for) a GA4 property with a **web** data stream whose URL is your Pages URL, and copy its Measurement ID (`G-` followed by ten characters).
+2. Paste it into `_config.yml`:
+   ```yaml
+   analytics:
+     google:
+       measurement_id: "G-XXXXXXXXXX"
+   ```
+3. Leave `consent_mode: none` to measure without a banner (the About page gains a *Usage statistics* paragraph with an opt-out link), or set `consent_mode: banner` to show an Accept/Decline bar and withhold analytics cookies until the visitor accepts.
+4. Commit. The tag is only emitted by production builds, which is what the workflow runs; `bundle exec jekyll serve` on your machine never sends anything. CI checks every build: no tag when the ID is empty, the right ID and no Google Signals when it is set.
+5. To watch the first hits arrive, set `debug: true` temporarily and open **Admin → DebugView** in GA4; set it back to `false` afterwards.
+
+Disabling analytics later is emptying the string; re-keying is replacing it. Templates never need touching. Visitors who send a Global Privacy Control or Do Not Track signal are skipped entirely (`respect_gpc: true`).
+
 ## Checklist
 
 - [ ] `.github/` folder and `.gitignore` present in the repository
@@ -102,6 +119,7 @@ Open **Issues → New issue → Suggest a resource**, fill in the form and submi
 - [ ] First workflow run green; site opens at `https://<org>.github.io/<repo>/`
 - [ ] Sample resources replaced
 - [ ] Issue form tested end to end
+- [ ] Google Analytics: Measurement ID pasted (or deliberately left empty)
 
 ## Working documents in the repository
 

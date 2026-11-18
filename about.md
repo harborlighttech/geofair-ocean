@@ -20,3 +20,9 @@ Every resource page carries a [Schema.org LearningResource](https://schema.org/L
 ## Reuse
 
 Catalogue metadata is licensed CC BY 4.0. Each resource keeps its own licence, shown on its page.
+
+{% if site.analytics.google.measurement_id and site.analytics.google.measurement_id != "" -%}
+## Usage statistics
+
+This site uses Google Analytics 4 to count page views, resource views, click-throughs to resources and search terms, so that maintainers can see which resources are reached and used. No advertising or demographic features are enabled, IP addresses are not stored, and no account or personal details are collected. Browsers that send a Global Privacy Control or Do Not Track signal are not measured at all. You can also [opt out]({{ '/about/?ga-optout=1' | relative_url }}) in this browser at any time (and [opt back in]({{ '/about/?ga-optout=0' | relative_url }})).
+{%- endif %}

@@ -1,0 +1,50 @@
+{%- comment -%}
+Google Analytics 4 loader. Emits nothing unless site.analytics.google.measurement_id
+is set AND this is a production build (JEKYLL_ENV=production). Everything that
+sends events lives in assets/js/analytics.js, which is a no-op when window.gtag
+is absent, so this include is the only place that decides whether GA4 exists.
+{%- endcomment -%}
+{%- assign ga = site.analytics.google -%}
+{%- if ga.measurement_id and ga.measurement_id != "" and jekyll.environment == "production" %}
+  <script id="geofair-analytics" data-measurement-id="{{ ga.measurement_id }}">
+  (function () {
+    var id = '{{ ga.measurement_id }}';
+    var optoutKey = 'geofair-ga-optout', consentKey = 'geofair-ga-consent';
+    try {
+      var q = new URLSearchParams(location.search);
+      if (q.has('ga-optout')) localStorage.setItem(optoutKey, q.get('ga-optout') === '0' ? '0' : '1');
+      if (localStorage.getItem(optoutKey) === '1') {
+        window['ga-disable-' + id] = true;
+        document.documentElement.setAttribute('data-ga-optout', '1');
+        return;
+      }
+    } catch (e) {}
+    {%- if ga.respect_gpc != false %}
+    if (navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || window.doNotTrack === '1') {
+      window['ga-disable-' + id] = true;
+      return;
+    }
+    {%- endif %}
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { window.dataLayer.push(arguments); }
+    window.gtag = gtag;
+    {%- if ga.consent_mode == "banner" %}
+    gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
+    try { if (localStorage.getItem(consentKey) === 'granted') gtag('consent', 'update', { analytics_storage: 'granted' }); } catch (e) {}
+    {%- else %}
+    gtag('consent', 'default', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+    {%- endif %}
+    gtag('js', new Date());
+    gtag('config', id, {
+      page_location: '{{ page.canonical_path | default: page.url | absolute_url }}',
+      allow_google_signals: {% if ga.google_signals == true %}true{% else %}false{% endif %},
+      allow_ad_personalization_signals: false{% if ga.debug == true %},
+      debug_mode: true{% endif %}
+    });
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+    document.head.appendChild(s);
+  })();
+  </script>
+{%- endif -%}
