@@ -12,6 +12,7 @@
   <meta name="robots" content="noindex">
   {%- endif %}
   <link rel="canonical" href="{{ page.canonical_path | default: page.url | absolute_url }}">
+  {%- include analytics.html %}
   {%- if site.fonts.google_fonts_url and site.fonts.google_fonts_url != "" %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,5 +37,6 @@
     {{ content }}
   </main>
   {% include footer.html %}
+  {%- include consent-banner.html %}
 </body>
 </html>

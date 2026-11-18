@@ -91,6 +91,19 @@ catalogue:
   # Shown on the home page
   recent_count: 5
 
+# --- Engagement metrics (Google Analytics 4) --------------------------------
+# Leave measurement_id empty and no analytics code is emitted anywhere.
+# The tag is only emitted in production builds (JEKYLL_ENV=production, which the
+# GitHub Actions workflow sets); local `jekyll serve` never sends hits.
+analytics:
+  google:
+    measurement_id: ""        # "G-XXXXXXXXXX" from the GA4 web data stream
+    respect_gpc: true         # skip the tag for browsers sending Global Privacy Control / Do Not Track
+    consent_mode: none        # none  = measure, no banner (About page explains; ?ga-optout=1 opts out)
+                              # banner = Consent Mode v2: analytics denied until the visitor accepts
+    google_signals: false     # keep off: no ads/demographics features, fewer thresholded reports
+    debug: false              # true sends debug_mode so hits appear in GA4 DebugView
+
 # ---------------------------------------------------------------------------
 # Below here: build settings. Rarely needs changes.
 # ---------------------------------------------------------------------------

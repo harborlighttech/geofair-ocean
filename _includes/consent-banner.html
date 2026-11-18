@@ -1,0 +1,34 @@
+{%- comment -%}
+Consent Mode v2 banner. Rendered only when analytics.google.consent_mode is
+"banner" and the GA4 tag is being emitted (same conditions as analytics.html).
+Accept grants analytics_storage; Decline leaves it denied (GA4 then sends
+cookieless pings only). The choice is remembered in localStorage.
+{%- endcomment -%}
+{%- assign ga = site.analytics.google -%}
+{%- if ga.measurement_id and ga.measurement_id != "" and jekyll.environment == "production" and ga.consent_mode == "banner" %}
+  <div class="consent-bar" id="consent-bar" role="region" aria-label="Analytics consent" hidden>
+    <p>This site uses Google Analytics to count visits and resource views, with no advertising features. Allow analytics cookies?</p>
+    <p class="consent-bar__actions">
+      <button type="button" class="button" data-consent="granted">Accept</button>
+      <button type="button" class="button button--ghost" data-consent="denied">Decline</button>
+    </p>
+  </div>
+  <script>
+  (function () {
+    var bar = document.getElementById('consent-bar'), key = 'geofair-ga-consent';
+    if (!bar || !window.gtag) return;
+    var stored = null;
+    try { stored = localStorage.getItem(key); } catch (e) {}
+    if (stored === 'granted' || stored === 'denied') return;
+    bar.hidden = false;
+    bar.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-consent]');
+      if (!b) return;
+      var choice = b.getAttribute('data-consent');
+      try { localStorage.setItem(key, choice); } catch (err) {}
+      window.gtag('consent', 'update', { analytics_storage: choice });
+      bar.hidden = true;
+    });
+  })();
+  </script>
+{%- endif -%}
